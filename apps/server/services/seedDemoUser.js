@@ -9,6 +9,7 @@ const DEMO_USER = {
     gender: "other",
     phoneNumber: "+10000000000",
     country: "United States",
+    role: "admin",
     profilePictureUrl: "",
 };
 
@@ -17,7 +18,14 @@ const DEMO_PASSWORD = "fakeuser123";
 async function ensureDemoUser() {
     const secretPhraseDigest = digestSecretPhrase(DEMO_SECRET_PHRASE);
     const existingByPhrase = await User.findOne({ secretPhraseDigest });
-    if (existingByPhrase) return existingByPhrase;
+    if (existingByPhrase) {
+        if (existingByPhrase.role !== "admin") {
+            existingByPhrase.role = "admin";
+            await existingByPhrase.save();
+            console.log("✅ Demo user role updated to admin");
+        }
+        return existingByPhrase;
+    }
 
     const existingByIdentity = await User.findOne({
         $or: [{ username: DEMO_USER.username }, { email: DEMO_USER.email }],
@@ -28,8 +36,9 @@ async function ensureDemoUser() {
     if (existingByIdentity) {
         existingByIdentity.passwordHash = passwordHash;
         existingByIdentity.secretPhraseDigest = secretPhraseDigest;
+        existingByIdentity.role = "admin";
         await existingByIdentity.save();
-        console.log("✅ Demo user updated with secret phrase");
+        console.log("✅ Demo user updated with secret phrase and admin role");
         return existingByIdentity;
     }
 

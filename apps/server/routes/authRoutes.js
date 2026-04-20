@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const authController = require("../controllers/authController");
+const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -31,5 +32,7 @@ const upload = multer({
 
 router.post("/register", upload.single("profilePicture"), authController.register);
 router.post("/login", authController.login);
+router.get("/me", requireAuth, authController.me);
+router.get("/admin/users", requireAuth, requireAdmin, authController.adminUsers);
 
 module.exports = router;

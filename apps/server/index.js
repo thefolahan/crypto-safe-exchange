@@ -80,6 +80,8 @@ const endpointCatalog = [
     { method: "GET", path: "/status", description: "Machine-readable health/status" },
     { method: "POST", path: "/api/auth/register", description: "Register user and secret phrase" },
     { method: "POST", path: "/api/auth/login", description: "Login via password or secret phrase" },
+    { method: "GET", path: "/api/auth/me", description: "Get current authenticated user" },
+    { method: "GET", path: "/api/auth/admin/users", description: "Admin: list users and details" },
     { method: "POST", path: "/api/newsletter/subscribe", description: "Subscribe to newsletter" },
     { method: "POST", path: "/api/newsletter/unsubscribe", description: "Unsubscribe from newsletter" },
     { method: "GET", path: "/uploads/:file", description: "Serve uploaded profile pictures" },

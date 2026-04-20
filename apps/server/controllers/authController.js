@@ -20,8 +20,29 @@ function toPublicUser(user) {
         gender: user.gender,
         phoneNumber: user.phoneNumber,
         country: user.country,
+        role: String(user.role || "user"),
         profilePictureUrl: user.profilePictureUrl,
     };
+}
+
+function toAdminUser(user) {
+    return {
+        id: user._id,
+        fullName: user.fullName,
+        username: user.username,
+        email: user.email,
+        gender: user.gender,
+        phoneNumber: user.phoneNumber,
+        country: user.country,
+        role: String(user.role || "user"),
+        profilePictureUrl: user.profilePictureUrl,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    };
+}
+
+function escapeRegex(value) {
+    return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 async function generateUniqueSecretPhrase(maxAttempts = 8) {
@@ -47,7 +68,12 @@ async function generateUniqueSecretPhrase(maxAttempts = 8) {
 
 function signAuthToken(user) {
     return jwt.sign(
-        { userId: user._id, username: user.username, email: user.email },
+        {
+            userId: user._id,
+            username: user.username,
+            email: user.email,
+            role: String(user.role || "user"),
+        },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
     );
@@ -158,6 +184,67 @@ exports.login = async (req, res) => {
         });
     } catch (err) {
         console.error("LOGIN ERROR:", err);
+        return res.status(500).json({ message: "Server error." });
+    }
+};
+
+exports.me = async (req, res) => {
+    try {
+        return res.json({
+            user: toPublicUser(req.user),
+        });
+    } catch (err) {
+        console.error("ME ERROR:", err);
+        return res.status(500).json({ message: "Server error." });
+    }
+};
+
+exports.adminUsers = async (req, res) => {
+    try {
+        const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+        const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 100, 1), 250);
+        const search = String(req.query.search || "").trim();
+
+        const filter = {};
+        if (search) {
+            const re = new RegExp(escapeRegex(search), "i");
+            filter.$or = [
+                { fullName: re },
+                { username: re },
+                { email: re },
+                { phoneNumber: re },
+                { country: re },
+            ];
+        }
+
+        const [users, totalUsers, adminUsers] = await Promise.all([
+            User.find(filter)
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * limit)
+                .limit(limit),
+            User.countDocuments(filter),
+            User.countDocuments({ ...filter, role: "admin" }),
+        ]);
+
+        const totalPages = Math.max(Math.ceil(totalUsers / limit), 1);
+        const regularUsers = Math.max(totalUsers - adminUsers, 0);
+
+        return res.json({
+            users: users.map(toAdminUser),
+            pagination: {
+                page,
+                limit,
+                totalUsers,
+                totalPages,
+            },
+            counts: {
+                totalUsers,
+                adminUsers,
+                regularUsers,
+            },
+        });
+    } catch (err) {
+        console.error("ADMIN USERS ERROR:", err);
         return res.status(500).json({ message: "Server error." });
     }
 };

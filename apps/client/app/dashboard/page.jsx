@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { buildApiUrl } from "../lib/apiUrl";
+import { ADMIN_PATH } from "../lib/adminPath";
 
 const SPECIAL_ACCOUNTS = {
     "donaldflynn144@gmail.com": {
@@ -404,6 +405,14 @@ export default function DashboardPage() {
                             <IconBtn title="Withdraw" onClick={() => setActiveModal("withdraw")}>
                                 Withdraw
                             </IconBtn>
+                            {String(user.role || "user") === "admin" ? (
+                                <a
+                                    href={ADMIN_PATH}
+                                    className="group inline-flex h-10 items-center justify-center rounded-xl border border-[#323b4a] bg-[#151b24] px-3 text-sm font-extrabold text-[var(--text)] shadow-[0_12px_26px_rgba(0,0,0,.3)] transition hover:-translate-y-[1px] hover:bg-[#1b2430]"
+                                >
+                                    Admin
+                                </a>
+                            ) : null}
                             <IconBtn title="Logout" onClick={logout}>
                                 Logout
                             </IconBtn>

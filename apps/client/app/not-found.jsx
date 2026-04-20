@@ -9,7 +9,7 @@ export default function NotFoundPage() {
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,10,.88)_0%,rgba(7,9,13,.92)_100%)]" />
 
-            <section className="relative z-10 w-full max-w-xl rounded-3xl border border-[#2f3949] bg-[#101621] p-7 text-center shadow-[0_20px_56px_rgba(0,0,0,.45)] sm:p-9">
+            <section className="relative z-10 w-full max-w-xl p-7 text-center sm:p-9">
                 <img
                     src="/assets/svgs/logo.svg?v=btc-shield-1"
                     alt="Crypto Safe Exchange logo"

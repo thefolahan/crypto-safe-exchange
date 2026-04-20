@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { buildApiUrl } from "../lib/apiUrl";
+import { ADMIN_PATH } from "../lib/adminPath";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -43,7 +44,8 @@ export default function LoginPage() {
             localStorage.setItem("token", payload.token);
             localStorage.setItem("user", JSON.stringify(payload.user));
 
-            const next = new URLSearchParams(window.location.search).get("next") || "/dashboard";
+            const requestedNext = new URLSearchParams(window.location.search).get("next");
+            const next = requestedNext || (payload?.user?.role === "admin" ? ADMIN_PATH : "/dashboard");
             router.push(next);
         } catch {
             alert("Network error");
