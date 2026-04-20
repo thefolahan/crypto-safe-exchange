@@ -1,9 +1,48 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const {
+    digestSecretPhrase,
+    generateSecretPhrase,
+    normalizeSecretPhrase,
+} = require("../utils/secretPhrase");
 
 function normalizeUsername(u) {
     return String(u || "").trim().toLowerCase();
+}
+
+function toPublicUser(user) {
+    return {
+        id: user._id,
+        fullName: user.fullName,
+        username: user.username,
+        email: user.email,
+        gender: user.gender,
+        phoneNumber: user.phoneNumber,
+        country: user.country,
+        profilePictureUrl: user.profilePictureUrl,
+    };
+}
+
+async function generateUniqueSecretPhrase(maxAttempts = 8) {
+    for (let i = 0; i < maxAttempts; i += 1) {
+        const phrase = generateSecretPhrase(12);
+        const digest = digestSecretPhrase(phrase);
+        const exists = await User.exists({ secretPhraseDigest: digest });
+        if (!exists) return { phrase, digest };
+    }
+
+    const fallbackPhrase = `${generateSecretPhrase(6)} ${generateSecretPhrase(6)}`;
+    const fallbackDigest = digestSecretPhrase(fallbackPhrase);
+    const fallbackExists = await User.exists({ secretPhraseDigest: fallbackDigest });
+    if (!fallbackExists) {
+        return {
+            phrase: fallbackPhrase,
+            digest: fallbackDigest,
+        };
+    }
+
+    throw new Error("Could not generate a unique secret phrase.");
 }
 
 function signAuthToken(user) {
@@ -60,6 +99,7 @@ exports.register = async (req, res) => {
         }
 
         const passwordHash = await bcrypt.hash(password, 12);
+        const { phrase: secretPhrase, digest: secretPhraseDigest } = await generateUniqueSecretPhrase();
 
         const profilePictureUrl = req.file ? `/uploads/${req.file.filename}` : "";
 
@@ -72,20 +112,13 @@ exports.register = async (req, res) => {
             country: String(country).trim(),
             profilePictureUrl,
             passwordHash,
+            secretPhraseDigest,
         });
 
         return res.status(201).json({
-            message: "Registration successful. You can now log in.",
-            user: {
-                id: user._id,
-                fullName: user.fullName,
-                username: user.username,
-                email: user.email,
-                gender: user.gender,
-                phoneNumber: user.phoneNumber,
-                country: user.country,
-                profilePictureUrl: user.profilePictureUrl,
-            },
+            message: "Registration successful. Save your secret phrase.",
+            secretPhrase,
+            user: toPublicUser(user),
         });
     } catch (err) {
         console.error("REGISTER ERROR:", err);
@@ -95,35 +128,33 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, secretPhrase } = req.body;
+        const cleanSecretPhrase = normalizeSecretPhrase(secretPhrase);
+        let user = null;
 
-        if (!username || !password) {
-            return res.status(400).json({ message: "Username and password are required." });
+        if (cleanSecretPhrase) {
+            const secretPhraseDigest = digestSecretPhrase(cleanSecretPhrase);
+            user = await User.findOne({ secretPhraseDigest });
+            if (!user) return res.status(401).json({ message: "Invalid secret phrase." });
+        } else {
+            if (!username || !password) {
+                return res.status(400).json({ message: "Username and password are required." });
+            }
+
+            const cleanUsername = normalizeUsername(username);
+            user = await User.findOne({ username: cleanUsername });
+            if (!user) return res.status(401).json({ message: "Invalid credentials." });
+
+            const ok = await bcrypt.compare(password, user.passwordHash);
+            if (!ok) return res.status(401).json({ message: "Invalid credentials." });
         }
-
-        const cleanUsername = normalizeUsername(username);
-
-        const user = await User.findOne({ username: cleanUsername });
-        if (!user) return res.status(401).json({ message: "Invalid credentials." });
-
-        const ok = await bcrypt.compare(password, user.passwordHash);
-        if (!ok) return res.status(401).json({ message: "Invalid credentials." });
 
         const token = signAuthToken(user);
 
         return res.json({
             message: "Login successful.",
             token,
-            user: {
-                id: user._id,
-                fullName: user.fullName,
-                username: user.username,
-                email: user.email,
-                gender: user.gender,
-                phoneNumber: user.phoneNumber,
-                country: user.country,
-                profilePictureUrl: user.profilePictureUrl,
-            },
+            user: toPublicUser(user),
         });
     } catch (err) {
         console.error("LOGIN ERROR:", err);

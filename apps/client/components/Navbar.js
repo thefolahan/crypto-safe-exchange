@@ -1,224 +1,136 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-function scrollToId(id, close) {
-    close?.();
-    setTimeout(() => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 30);
+const navItems = [
+    { id: "about", label: "About" },
+    { id: "pricing", label: "Pricing" },
+    { id: "contact", label: "Contact" },
+];
+
+function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 export default function Navbar() {
     const router = useRouter();
-
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const panelRef = useRef(null);
-
+    const [open, setOpen] = useState(false);
     const [token, setToken] = useState("");
-    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const read = () => {
-            const t = localStorage.getItem("token") || "";
-            const u = localStorage.getItem("user");
-            setToken(t);
-            try {
-                setUser(u ? JSON.parse(u) : null);
-            } catch {
-                setUser(null);
-            }
-        };
-
+        const read = () => setToken(localStorage.getItem("token") || "");
         read();
         window.addEventListener("storage", read);
         return () => window.removeEventListener("storage", read);
     }, []);
 
-    function logout() {
+    useEffect(() => {
+        document.body.style.overflow = open ? "hidden" : "";
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [open]);
+
+    function onLogout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         setToken("");
-        setUser(null);
-        setMobileOpen(false);
+        setOpen(false);
         router.push("/");
     }
 
-    useEffect(() => {
-        function onDoc(e) {
-            if (!mobileOpen) return;
-            if (!panelRef.current) return;
-            if (!panelRef.current.contains(e.target)) setMobileOpen(false);
-        }
-        document.addEventListener("mousedown", onDoc);
-        return () => document.removeEventListener("mousedown", onDoc);
-    }, [mobileOpen]);
-
-    useEffect(() => {
-        function onKey(e) {
-            if (e.key === "Escape") setMobileOpen(false);
-        }
-        document.addEventListener("keydown", onKey);
-        return () => document.removeEventListener("keydown", onKey);
-    }, []);
-
-    useEffect(() => {
-        if (mobileOpen) document.body.style.overflow = "hidden";
-        else document.body.style.overflow = "";
-        return () => (document.body.style.overflow = "");
-    }, [mobileOpen]);
-
-    const closeMobile = () => setMobileOpen(false);
-
     return (
-        <header className="navWrap">
-            <div className="container navInner">
-                <a className="logo" href="/" onClick={closeMobile} aria-label="Home">
-                    <img src="/assets/svgs/logo.svg" alt="Logo" className="navLogo" />
+        <header className="sticky top-0 z-50 border-b border-[#1e232d] bg-[rgba(8,9,12,.88)] backdrop-blur-xl">
+            <div className="site-container flex h-16 items-center justify-between gap-4 sm:h-[4.5rem]">
+                <a href="/" className="flex items-center gap-2.5" aria-label="Crypto Safe Exchange Home">
+                    <img src="/assets/svgs/logo.svg?v=btc-shield-1" alt="Logo" className="h-10 w-10 sm:h-11 sm:w-11" />
                 </a>
 
-                <nav className="nav">
-                    <a
-                        className="navLink"
-                        href="#products"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            scrollToId("products", closeMobile);
-                        }}
-                    >
-                        Products
-                    </a>
-
-                    <a
-                        className="navLink"
-                        href="#services"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            scrollToId("services", closeMobile);
-                        }}
-                    >
-                        Services
-                    </a>
-
-                    <a
-                        className="navLink"
-                        href="#footer"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            scrollToId("footer", closeMobile);
-                        }}
-                    >
-                        About Us
-                    </a>
+                <nav className="hidden items-center gap-1 md:flex">
+                    {navItems.map((item) => (
+                        <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => scrollTo(item.id)}
+                            className="rounded-full px-3 py-1.5 text-sm font-medium text-[#d9dbe0] transition hover:bg-white/[0.04] hover:text-white"
+                        >
+                            {item.label}
+                        </button>
+                    ))}
                 </nav>
 
-                <div className="navActions">
-                    {!token ? (
+                <div className="hidden items-center gap-2 md:flex">
+                    {token ? (
                         <>
-                            <a className="btn small ghost" href="/register">
-                                Register
+                            <a href="/dashboard" className="btn-dark text-sm">
+                                Dashboard
                             </a>
-                            <a className="btn small primary" href="/login">
-                                Login
-                            </a>
+                            <button type="button" onClick={onLogout} className="btn-gold text-sm">
+                                Logout
+                            </button>
                         </>
                     ) : (
                         <>
-                            <a className="btn small ghost" href="/dashboard">
-                                Dashboard
+                            <a href="/register" className="btn-gold text-sm">
+                                Get Started
                             </a>
-                            <button className="btn small primary" type="button" onClick={logout}>
-                                Logout{user?.username ? ` (${user.username})` : ""}
-                            </button>
                         </>
                     )}
                 </div>
 
                 <button
-                    className="hamburger"
                     type="button"
+                    onClick={() => setOpen((v) => !v)}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#262c37] text-[#e6e9ee] md:hidden"
                     aria-label="Open menu"
-                    aria-expanded={mobileOpen}
-                    onClick={() => setMobileOpen((v) => !v)}
                 >
-                    <span className={`hamLine ${mobileOpen ? "x1" : ""}`} />
-                    <span className={`hamLine ${mobileOpen ? "x2" : ""}`} />
-                    <span className={`hamLine ${mobileOpen ? "x3" : ""}`} />
+                    {open ? "✕" : "☰"}
                 </button>
             </div>
 
-            {mobileOpen && <div className="mOverlay" />}
+            {open ? (
+                <div className="border-t border-[#1e232d] bg-[#0a0c10] md:hidden">
+                    <div className="site-container py-3">
+                        <div className="grid gap-1">
+                            {navItems.map((item) => (
+                                <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => {
+                                        setOpen(false);
+                                        scrollTo(item.id);
+                                    }}
+                                    className="rounded-lg px-3 py-2 text-left text-sm font-medium text-[#d9dbe0] hover:bg-white/[0.04]"
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
 
-            <div className={`mPanel ${mobileOpen ? "open" : ""}`}>
-                <div className="mPanelInner" ref={panelRef}>
-                    <div className="mTopRow">
-                        <div className="mTitle">Menu</div>
-                        <button className="mClose" type="button" onClick={closeMobile} aria-label="Close menu">
-                            ✕
-                        </button>
-                    </div>
-
-                    <div className="mNav">
-                        <a
-                            className="mItem"
-                            href="#products"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                scrollToId("products", closeMobile);
-                            }}
-                        >
-                            Products
-                        </a>
-
-                        <a
-                            className="mItem"
-                            href="#services"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                scrollToId("services", closeMobile);
-                            }}
-                        >
-                            Services
-                        </a>
-
-                        <a
-                            className="mItem"
-                            href="#footer"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                scrollToId("footer", closeMobile);
-                            }}
-                        >
-                            About Us
-                        </a>
-
-                        <div className="mActions">
-                            {!token ? (
+                        <div className="mt-3 grid gap-2">
+                            {token ? (
                                 <>
-                                    <a className="btn full ghost" href="/register" onClick={closeMobile}>
-                                        Register
+                                    <a href="/dashboard" className="btn-dark text-sm" onClick={() => setOpen(false)}>
+                                        Dashboard
                                     </a>
-                                    <a className="btn full primary" href="/login" onClick={closeMobile}>
-                                        Login
-                                    </a>
+                                    <button type="button" onClick={onLogout} className="btn-gold text-sm">
+                                        Logout
+                                    </button>
                                 </>
                             ) : (
                                 <>
-                                    <a className="btn full ghost" href="/dashboard" onClick={closeMobile}>
-                                        Dashboard
+                                    <a href="/register" className="btn-gold text-sm" onClick={() => setOpen(false)}>
+                                        Get Started
                                     </a>
-                                    <button className="btn full primary" type="button" onClick={logout}>
-                                        Logout{user?.username ? ` (${user.username})` : ""}
-                                    </button>
                                 </>
                             )}
                         </div>
                     </div>
                 </div>
-            </div>
+            ) : null}
         </header>
     );
 }

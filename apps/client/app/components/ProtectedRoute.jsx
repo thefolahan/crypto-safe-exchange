@@ -29,15 +29,11 @@ export default function ProtectedRoute({ children }) {
 
     if (!ok) {
         return (
-            <main style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
-                <div className="panel" style={{ width: "min(560px, 92%)" }}>
-                    <div className="smallcaps muted">Protected</div>
-                    <div className="h3" style={{ fontWeight: 900, marginTop: 6 }}>
-                        Checking session…
-                    </div>
-                    <p className="muted lead" style={{ marginTop: 8 }}>
-                        Please wait.
-                    </p>
+            <main className="grid min-h-screen place-items-center bg-[#050607] px-4">
+                <div className="site-card w-full max-w-md p-5 text-center sm:p-6">
+                    <p className="text-xs uppercase tracking-[0.12em] text-[var(--gold)]">Protected</p>
+                    <p className="mt-2 text-lg font-semibold text-[#f2f4f7]">Checking session…</p>
+                    <p className="mt-2 text-sm text-[var(--muted)]">Please wait.</p>
                 </div>
             </main>
         );

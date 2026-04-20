@@ -2,97 +2,153 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { buildApiUrl } from "../lib/apiUrl";
 
 export default function LoginPage() {
     const router = useRouter();
-
+    const [mode, setMode] = useState("password");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [secretPhrase, setSecretPhrase] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    async function onSubmit(e) {
-        e.preventDefault();
-        if (!username || !password) return alert("Enter username and password.");
+    async function onSubmit(event) {
+        event.preventDefault();
+
+        if (mode === "secret") {
+            if (!secretPhrase.trim()) return alert("Enter your secret phrase.");
+        } else if (!username || !password) {
+            return alert("Enter username and password.");
+        }
 
         try {
             setLoading(true);
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+            const body =
+                mode === "secret"
+                    ? { secretPhrase }
+                    : { username, password };
+
+            const response = await fetch(buildApiUrl("/api/auth/login"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify(body),
             });
 
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) return alert(data?.message || "Login failed.");
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) return alert(payload?.message || "Login failed.");
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
+            localStorage.setItem("token", payload.token);
+            localStorage.setItem("user", JSON.stringify(payload.user));
 
             const next = new URLSearchParams(window.location.search).get("next") || "/dashboard";
             router.push(next);
-        } catch (err) {
+        } catch {
             alert("Network error");
         } finally {
             setLoading(false);
         }
     }
 
+    const fieldClass = "input border-[#303745] bg-[#0c1016]";
+
     return (
-        <main className="relative min-h-screen w-full overflow-hidden">
+        <main className="relative min-h-screen overflow-y-auto px-4 py-8 sm:py-10">
             <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: "url('/assets/images/register-background.webp')" }}
             />
-            <div className="absolute inset-0 bg-[rgba(6,12,24,0.72)]" />
+            <div className="absolute inset-0 bg-[rgba(4,6,10,.74)]" />
 
-            <div className="relative z-10 grid min-h-screen place-items-center px-4 py-10 sm:py-14">
+            <div className="relative z-10 grid min-h-[calc(100vh-4rem)] place-items-center sm:min-h-[calc(100vh-5rem)]">
                 <div className="mx-auto w-full max-w-md">
-                    <div className="rounded-2xl border border-white/10 bg-[rgba(15,26,46,.92)] p-5 shadow-[0_18px_55px_rgba(0,0,0,.55)] sm:p-7">
-                        <h1 className="text-center text-2xl font-black tracking-tight text-white sm:text-3xl">
-                            Sign in
-                        </h1>
+                    <a href="/" className="mx-auto mb-6 flex w-fit items-center text-sm text-[var(--gold)]">
+                        <img src="/assets/svgs/logo.svg?v=btc-shield-1" alt="Logo" className="h-12 w-12" />
+                    </a>
 
-                        <form onSubmit={onSubmit} className="mt-5 grid gap-3.5">
-                            <div className="relative">
-                                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/80">
-                                    <FaUser />
-                                </span>
-                                <input
-                                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pl-11 text-white outline-none placeholder:text-white/50 focus:border-white/20"
-                                    placeholder="Username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
+                    <div className="site-card bg-[#0f1218] p-5 sm:p-6">
+                        <h1 className="text-3xl font-semibold text-[#f3f4f6]">Sign in</h1>
+                        <p className="mt-2 text-sm text-[var(--muted)]">Access your account dashboard.</p>
+
+                        <form onSubmit={onSubmit} className="mt-5 grid gap-3">
+                            <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-[#2e3645] bg-[#0b0f16] p-1 text-xs font-semibold">
+                                <button
+                                    type="button"
+                                    onClick={() => setMode("password")}
+                                    className={`rounded-md px-3 py-2 transition ${
+                                        mode === "password"
+                                            ? "bg-[var(--gold)] text-[#16120a]"
+                                            : "text-[#c7d0de] hover:bg-white/[0.05]"
+                                    }`}
+                                >
+                                    Username
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setMode("secret")}
+                                    className={`rounded-md px-3 py-2 transition ${
+                                        mode === "secret"
+                                            ? "bg-[var(--gold)] text-[#16120a]"
+                                            : "text-[#c7d0de] hover:bg-white/[0.05]"
+                                    }`}
+                                >
+                                    Secret Phrase
+                                </button>
                             </div>
 
-                            <div className="relative">
-                                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/80">
-                                    <FaLock />
-                                </span>
-                                <input
-                                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pl-11 text-white outline-none placeholder:text-white/50 focus:border-white/20"
-                                    type="password"
-                                    placeholder="Password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                            </div>
+                            {mode === "secret" ? (
+                                <label className="block">
+                                    <span className="mb-1.5 block text-xs text-[var(--muted)]">Secret phrase</span>
+                                    <input
+                                        value={secretPhrase}
+                                        onChange={(e) => setSecretPhrase(e.target.value)}
+                                        placeholder="Enter your 12-word secret phrase"
+                                        className={fieldClass}
+                                    />
+                                </label>
+                            ) : (
+                                <>
+                                    <label className="block">
+                                        <span className="mb-1.5 block text-xs text-[var(--muted)]">Username</span>
+                                        <input
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            placeholder="Enter username"
+                                            className={fieldClass}
+                                        />
+                                    </label>
 
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="mt-1 inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-[rgba(47,107,255,.95)] to-[rgba(32,211,255,.75)] px-4 py-3.5 font-extrabold text-white transition hover:from-[rgba(47,107,255,1)] hover:to-[rgba(32,211,255,.85)] disabled:cursor-not-allowed disabled:opacity-70"
-                            >
-                                {loading ? "Signing in..." : "Login"}
+                                    <label className="block">
+                                        <span className="mb-1.5 block text-xs text-[var(--muted)]">Password</span>
+                                        <span className="relative block">
+                                            <input
+                                                type={showPassword ? "text" : "password"}
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                placeholder="Enter password"
+                                                className={`${fieldClass} pr-12`}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword((v) => !v)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--muted)]"
+                                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                            >
+                                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                            </button>
+                                        </span>
+                                    </label>
+                                </>
+                            )}
+
+                            <button type="submit" disabled={loading} className="btn-gold mt-1 w-full justify-center">
+                                {loading ? "Signing in..." : "Sign in"}
                             </button>
 
-                            <a
-                                href="/register"
-                                className="mt-1 text-center font-extrabold text-white/85 hover:text-white hover:underline"
-                            >
-                                Don’t have an account? Register
+                            <a href="/register" className="text-center text-sm text-[var(--muted)] hover:text-[#eef1f6]">
+                                No account yet? <span className="text-[var(--gold)]">Create one</span>
                             </a>
                         </form>
                     </div>

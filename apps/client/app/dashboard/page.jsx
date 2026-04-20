@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { buildApiUrl } from "../lib/apiUrl";
 
 const SPECIAL_ACCOUNTS = {
     "donaldflynn144@gmail.com": {
@@ -72,7 +73,7 @@ function formatBTC(n) {
 function resolveProfileUrl(profilePictureUrl) {
     if (!profilePictureUrl) return "";
     if (/^https?:\/\//i.test(profilePictureUrl)) return profilePictureUrl;
-    return `${process.env.NEXT_PUBLIC_API_URL}${profilePictureUrl}`;
+    return buildApiUrl(profilePictureUrl);
 }
 
 function formatCompactUSD(n) {
@@ -106,7 +107,7 @@ function IconBtn({ children, onClick, title }) {
             type="button"
             title={title}
             onClick={onClick}
-            className="group inline-flex h-10 items-center justify-center rounded-xl border border-[var(--border)] bg-white/5 px-3 text-sm font-extrabold text-[var(--text)] transition hover:-translate-y-[1px] hover:bg-white/10"
+            className="group inline-flex h-10 items-center justify-center rounded-xl border border-[#323b4a] bg-[#151b24] px-3 text-sm font-extrabold text-[var(--text)] shadow-[0_12px_26px_rgba(0,0,0,.3)] transition hover:-translate-y-[1px] hover:bg-[#1b2430]"
         >
             {children}
         </button>
@@ -118,16 +119,16 @@ function Modal({ open, title, subtitle, onClose, children }) {
 
     return (
         <div
-            className="fixed inset-0 z-[90] grid place-items-center bg-black/60 p-4"
+            className="fixed inset-0 z-[90] grid place-items-center bg-black/70 p-4"
             onMouseDown={onClose}
             role="dialog"
             aria-modal="true"
         >
             <div
-                className="w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border)] bg-[rgba(15,26,46,.98)] shadow-[0_18px_55px_rgba(0,0,0,.55)]"
+                className="w-full max-w-2xl overflow-hidden rounded-2xl border border-[#303848] bg-[#10151f] shadow-[0_20px_58px_rgba(0,0,0,.62)]"
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                <div className="flex items-start justify-between gap-3 border-b border-white/10 p-4">
+                <div className="flex items-start justify-between gap-3 border-b border-[#2f3847] p-4">
                     <div className="min-w-0">
                         <div className="text-base font-black text-[var(--text)]">{title}</div>
                         {subtitle ? (
@@ -138,7 +139,7 @@ function Modal({ open, title, subtitle, onClose, children }) {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-white/5 text-[var(--text)] transition hover:bg-white/10"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#323b4a] bg-[#161d29] text-[var(--text)] transition hover:bg-[#202a38]"
                         aria-label="Close modal"
                     >
                         ✕
@@ -324,17 +325,18 @@ export default function DashboardPage() {
     if (!user) return null;
 
     return (
-        <main className="py-7">
-            <div className="container">
-                <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-white/5 p-5 shadow-[0_18px_55px_rgba(0,0,0,.45)]">
-                    <div className="pointer-events-none absolute inset-0 opacity-70">
-                        <div className="absolute -left-40 -top-56 h-[520px] w-[520px] rounded-full bg-[rgba(47,107,255,.26)] blur-[70px]" />
-                        <div className="absolute -right-40 -top-56 h-[520px] w-[520px] rounded-full bg-[rgba(32,211,255,.14)] blur-[70px]" />
-                    </div>
+        <main className="relative min-h-screen overflow-hidden py-7 sm:py-8">
+            <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: "url('/assets/images/hero1.webp')" }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,10,.86)_0%,rgba(7,9,13,.9)_100%)]" />
 
-                    <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
+            <div className="relative z-10 mx-auto w-full max-w-[1380px] px-4 sm:px-5 lg:px-7">
+                <div className="relative overflow-hidden rounded-3xl border border-[#303a4b] bg-[#0f141d] p-5 shadow-[0_20px_56px_rgba(0,0,0,.5)]">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
-                            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[rgba(47,107,255,.85)] to-[rgba(32,211,255,.45)] shadow-[0_16px_40px_rgba(0,0,0,.35)] sm:h-[64px] sm:w-[64px]">
+                            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-[#3a465a] bg-gradient-to-br from-[rgba(221,192,138,.92)] to-[rgba(164,134,84,.78)] shadow-[0_16px_40px_rgba(0,0,0,.35)] sm:h-[64px] sm:w-[64px]">
                                 {profileUrl ? (
                                     <img src={profileUrl} alt="Profile" className="h-full w-full object-cover object-top" />
                                 ) : (
@@ -346,9 +348,9 @@ export default function DashboardPage() {
 
                             <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl border border-white/10 bg-white/5 shadow-[0_10px_24px_rgba(0,0,0,.25)]">
+                                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl border border-[#39465a] bg-[#1a2230] shadow-[0_10px_24px_rgba(0,0,0,.25)]">
                                         <img
-                                            src="/assets/svgs/logo.svg"
+                                            src="/assets/svgs/logo.svg?v=btc-shield-1"
                                             alt="Logo"
                                             className="h-4 w-4 opacity-90"
                                         />
@@ -364,20 +366,20 @@ export default function DashboardPage() {
                                 </div>
 
                                 <div className="mt-1 flex flex-wrap items-center gap-2 text-sm font-semibold text-[var(--muted)]">
-                                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                                    <span className="rounded-full border border-[#333d4e] bg-[#171f2b] px-3 py-1">
                                         @<span className="font-black text-[var(--text)]">{user.username || "—"}</span>
                                     </span>
-                                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                                    <span className="rounded-full border border-[#333d4e] bg-[#171f2b] px-3 py-1">
                                         {softMaskEmail(user.email)}
                                     </span>
 
                                     {btcPrice ? (
-                                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                                        <span className="rounded-full border border-[#333d4e] bg-[#171f2b] px-3 py-1">
                                             BTC:{" "}
                                             <span className="font-black text-[var(--text)]">{formatUSD(btcPrice)}</span>
                                         </span>
                                     ) : (
-                                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                                        <span className="rounded-full border border-[#333d4e] bg-[#171f2b] px-3 py-1">
                                             BTC:{" "}
                                             <span className="font-black text-[var(--text)]">Loading…</span>
                                         </span>
@@ -399,10 +401,10 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="relative z-10 mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#2f3948] pt-4">
                         <div className="flex flex-wrap items-center gap-2">
                             {btcTs ? (
-                                <span className="chip">
+                                <span className="inline-flex items-center gap-1 rounded-full border border-[#333d4f] bg-[#171f2b] px-3 py-1 text-xs font-bold text-[#dde1e8]">
                                     Updated:{" "}
                                     <span className="font-black text-[var(--text)]">
                                         {new Date(btcTs).toLocaleString()}
@@ -412,7 +414,11 @@ export default function DashboardPage() {
                         </div>
 
                         {sessionChange ? (
-                            <div className={`btcChange ${sessionChange.diff >= 0 ? "up" : "down"}`}>
+                            <div
+                                className={`inline-flex items-center rounded-full border border-[#333d4f] bg-[#171f2b] px-3 py-1 text-xs font-extrabold ${
+                                    sessionChange.diff >= 0 ? "text-[#7be7c0]" : "text-[#f9a792]"
+                                }`}
+                            >
                                 {sessionChange.diff >= 0 ? "▲" : "▼"}{" "}
                                 {formatUSD(Math.abs(sessionChange.diff))} (
                                 {Math.abs(sessionChange.pct).toFixed(2)}%)
@@ -425,14 +431,9 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
-                    <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[rgba(15,26,46,.55)] p-5 shadow-[0_18px_55px_rgba(0,0,0,.35)]">
-                        <div className="pointer-events-none absolute inset-0 opacity-70">
-                            <div className="absolute -left-44 -top-72 h-[540px] w-[540px] rounded-full bg-[rgba(47,107,255,.22)] blur-[75px]" />
-                            <div className="absolute -right-40 -top-64 h-[520px] w-[520px] rounded-full bg-[rgba(32,211,255,.14)] blur-[75px]" />
-                        </div>
-
-                        <div className="relative z-10 flex items-start justify-between gap-4">
+                <div className="mt-5 grid gap-4 lg:grid-cols-[1.28fr_.82fr]">
+                    <div className="rounded-3xl border border-[#2f3949] bg-[#101621] p-5 shadow-[0_20px_56px_rgba(0,0,0,.38)]">
+                        <div className="flex items-start justify-between gap-4">
                             <div>
                                 <div className="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--muted)]">
                                     Total Portfolio Value
@@ -457,8 +458,8 @@ export default function DashboardPage() {
                             </div>
                         </div>
 
-                        <div className="relative z-10 mt-5 grid gap-3 sm:grid-cols-2">
-                            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                            <div className="rounded-2xl border border-[#323c4d] bg-[#151e2a] p-4">
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--muted)]">
                                         Bitcoin Holdings
@@ -479,7 +480,7 @@ export default function DashboardPage() {
                                 </div>
                             </div>
 
-                            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                            <div className="rounded-2xl border border-[#323c4d] bg-[#151e2a] p-4">
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--muted)]">
                                         USD Value (Live)
@@ -493,7 +494,7 @@ export default function DashboardPage() {
                             </div>
                         </div>
 
-                        <div className="relative z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#323c4d] bg-[#161e2b] p-4">
                             <div className="text-sm font-semibold text-[var(--muted)]">
                                 Estimated portfolio (compact):{" "}
                                 <span className="font-black text-[var(--text)]">
@@ -504,7 +505,7 @@ export default function DashboardPage() {
                             <button
                                 type="button"
                                 onClick={() => setActiveModal("deposit")}
-                                className="btn small primary"
+                                className="inline-flex items-center justify-center rounded-lg border border-[rgba(221,192,138,.35)] bg-[var(--gold)] px-4 py-2 text-sm font-extrabold text-[#1c160c] transition hover:bg-[var(--gold-strong)]"
                             >
                                 Add Funds
                             </button>
@@ -512,7 +513,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="grid gap-4">
-                        <div className="rounded-3xl border border-[var(--border)] bg-white/5 p-5 shadow-[0_18px_55px_rgba(0,0,0,.35)]">
+                        <div className="rounded-3xl border border-[#2f3949] bg-[#101621] p-5 shadow-[0_20px_56px_rgba(0,0,0,.38)]">
                             <div className="flex items-start justify-between gap-3">
                                 <div>
                                     <div className="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--muted)]">
@@ -529,9 +530,9 @@ export default function DashboardPage() {
                                 </div>
 
                                 <div
-                                    className={`rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-black ${
+                                    className={`rounded-full border border-[#343e4e] bg-[#171f2b] px-3 py-1 text-sm font-black ${
                                         withdrawState.ok
-                                            ? "text-[rgba(90,255,190,.95)]"
+                                            ? "text-[rgba(221,192,138,.95)]"
                                             : "text-[rgba(255,190,120,.95)]"
                                     }`}
                                 >
@@ -540,13 +541,13 @@ export default function DashboardPage() {
                             </div>
 
                             <div className="mt-4">
-                                <div className="h-3 w-full overflow-hidden rounded-full border border-white/10 bg-white/5">
+                                <div className="h-3 w-full overflow-hidden rounded-full border border-[#333e4f] bg-[#151d29]">
                                     <div
                                         className="h-full rounded-full"
                                         style={{
                                             width: `${Math.round(withdrawState.ratio * 100)}%`,
                                             background:
-                                                "linear-gradient(90deg, rgba(47,107,255,.95), rgba(32,211,255,.75))",
+                                                "linear-gradient(90deg, rgba(221,192,138,.95), rgba(164,134,84,.75))",
                                         }}
                                     />
                                 </div>
@@ -564,7 +565,7 @@ export default function DashboardPage() {
                                             <div className="text-sm font-extrabold text-[var(--muted)]">
                                                 Awaiting unlock…
                                             </div>
-                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-[rgba(32,211,255,.95)]" />
+                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-[rgba(221,192,138,.95)]" />
                                         </div>
                                     ) : (
                                         <div className="text-sm font-extrabold text-[var(--muted)]">
@@ -576,14 +577,14 @@ export default function DashboardPage() {
                                 <button
                                     type="button"
                                     onClick={() => setActiveModal("withdraw")}
-                                    className="mt-4 btn full"
+                                    className="mt-4 inline-flex w-full items-center justify-center rounded-lg border border-[#333d4f] bg-[#151d29] px-4 py-2.5 text-sm font-bold text-[#eef2f7] transition hover:bg-[#1d2735]"
                                 >
                                     Open Withdraw
                                 </button>
                             </div>
                         </div>
 
-                        <div className="rounded-3xl border border-[var(--border)] bg-[rgba(15,26,46,.55)] p-5 shadow-[0_18px_55px_rgba(0,0,0,.35)]">
+                        <div className="rounded-3xl border border-[#2f3949] bg-[#101621] p-5 shadow-[0_20px_56px_rgba(0,0,0,.38)]">
                             <div className="flex items-center justify-between gap-3">
                                 <div>
                                     <div className="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--muted)]">
@@ -597,12 +598,16 @@ export default function DashboardPage() {
                                 <button
                                     type="button"
                                     onClick={() => setActiveModal("deposit")}
-                                    className="btn full primary"
+                                    className="inline-flex w-full items-center justify-center rounded-lg border border-[rgba(221,192,138,.35)] bg-[var(--gold)] px-4 py-2.5 text-sm font-extrabold text-[#1c160c] transition hover:bg-[var(--gold-strong)]"
                                 >
                                     Deposit
                                 </button>
 
-                                <button type="button" onClick={() => setActiveModal("withdraw")} className="btn full">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveModal("withdraw")}
+                                    className="inline-flex w-full items-center justify-center rounded-lg border border-[#333d4f] bg-[#151d29] px-4 py-2.5 text-sm font-bold text-[#eef2f7] transition hover:bg-[#1d2735]"
+                                >
                                     Withdraw
                                 </button>
                             </div>
@@ -612,7 +617,7 @@ export default function DashboardPage() {
 
                 <Modal open={activeModal === "deposit"} title="Deposit" onClose={() => setActiveModal(null)}>
                     <div className="grid gap-3">
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <div className="rounded-2xl border border-[#323c4d] bg-[#141c28] p-4">
                             <div className="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--muted)]">
                                 Suggested Providers
                             </div>
@@ -624,7 +629,7 @@ export default function DashboardPage() {
                                         href={x.url}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="group flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 transition hover:-translate-y-[1px] hover:bg-white/5"
+                                        className="group flex items-center justify-between gap-3 rounded-2xl border border-[#323c4d] bg-[#161f2d] px-4 py-3 transition hover:-translate-y-[1px] hover:bg-[#202a39]"
                                     >
                                         <span className="font-black text-[var(--text)]">{x.name}</span>
                                         <span className="text-sm font-extrabold text-[var(--muted)] group-hover:text-[var(--text)]">
@@ -635,7 +640,11 @@ export default function DashboardPage() {
                             </div>
                         </div>
 
-                        <button type="button" className="btn full" onClick={() => setActiveModal(null)}>
+                        <button
+                            type="button"
+                            className="inline-flex w-full items-center justify-center rounded-lg border border-[#333d4f] bg-[#151d29] px-4 py-2.5 text-sm font-bold text-[#eef2f7] transition hover:bg-[#1d2735]"
+                            onClick={() => setActiveModal(null)}
+                        >
                             Done
                         </button>
                     </div>
@@ -643,7 +652,7 @@ export default function DashboardPage() {
 
                 <Modal open={activeModal === "withdraw"} title="Withdraw" onClose={() => setActiveModal(null)}>
                     <div className="grid gap-3">
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <div className="rounded-2xl border border-[#323c4d] bg-[#141c28] p-4">
                             <div className="flex items-start justify-between gap-3">
                                 <div>
                                     <div className="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--muted)]">
@@ -662,24 +671,24 @@ export default function DashboardPage() {
 
                                 {!withdrawState.ok ? (
                                     <div className="flex items-center gap-2">
-                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-[rgba(32,211,255,.95)]" />
+                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-[rgba(221,192,138,.95)]" />
                                         <div className="text-sm font-black text-[var(--muted)]">Locked</div>
                                     </div>
                                 ) : (
-                                    <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-black text-[rgba(90,255,190,.95)]">
+                                    <div className="rounded-full border border-[#343e4e] bg-[#171f2b] px-3 py-1 text-sm font-black text-[rgba(221,192,138,.95)]">
                                         Unlocked
                                     </div>
                                 )}
                             </div>
 
                             <div className="mt-4">
-                                <div className="h-3 w-full overflow-hidden rounded-full border border-white/10 bg-black/20">
+                                <div className="h-3 w-full overflow-hidden rounded-full border border-[#333e4f] bg-[#151d29]">
                                     <div
                                         className="h-full rounded-full"
                                         style={{
                                             width: `${Math.round(withdrawState.ratio * 100)}%`,
                                             background:
-                                                "linear-gradient(90deg, rgba(47,107,255,.95), rgba(32,211,255,.75))",
+                                                "linear-gradient(90deg, rgba(221,192,138,.95), rgba(164,134,84,.75))",
                                         }}
                                     />
                                 </div>
@@ -692,7 +701,7 @@ export default function DashboardPage() {
 
                             <button
                                 type="button"
-                                className="mt-4 btn full"
+                                className="mt-4 inline-flex w-full items-center justify-center rounded-lg border border-[#333d4f] bg-[#151d29] px-4 py-2.5 text-sm font-bold text-[#eef2f7] transition hover:bg-[#1d2735] disabled:cursor-not-allowed disabled:opacity-60"
                                 disabled={!withdrawState.ok}
                                 onClick={() => {}}
                             >
@@ -704,7 +713,11 @@ export default function DashboardPage() {
                             </div>
                         </div>
 
-                        <button type="button" className="btn full" onClick={() => setActiveModal(null)}>
+                        <button
+                            type="button"
+                            className="inline-flex w-full items-center justify-center rounded-lg border border-[#333d4f] bg-[#151d29] px-4 py-2.5 text-sm font-bold text-[#eef2f7] transition hover:bg-[#1d2735]"
+                            onClick={() => setActiveModal(null)}
+                        >
                             Close
                         </button>
                     </div>

@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
         country: { type: String, required: true, trim: true },
         profilePictureUrl: { type: String, default: "" },
         passwordHash: { type: String, required: true },
+        secretPhraseDigest: { type: String, required: true, unique: true, sparse: true },
     },
     { timestamps: true }
 );
