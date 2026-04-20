@@ -6,9 +6,11 @@
     "dev": "concurrently -n client,server -c cyan,magenta \"npm:dev:client\" \"npm:dev:server\"",
     "dev:client": "npm run dev --workspace=cryptoearnings",
     "dev:server": "npm run dev --workspace=cryptoearnings-server",
+    "build": "npm run build --workspace=cryptoearnings",
     "build:client": "npm run build --workspace=cryptoearnings",
     "start:client": "npm run start --workspace=cryptoearnings",
-    "start:server": "npm run start --workspace=cryptoearnings-server"
+    "start:server": "npm run start --workspace=cryptoearnings-server",
+    "vercel-build": "npm run build --workspace=cryptoearnings"
   },
   "private": true,
   "workspaces": [
