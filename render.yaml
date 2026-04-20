@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: crypto-safe-exchange-api
+    runtime: node
+    plan: free
+    rootDir: apps/server
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: https://client-rho-lime.vercel.app
+      - key: CLIENT_URL_2
+        value: https://www.cryptosafe.exchange
