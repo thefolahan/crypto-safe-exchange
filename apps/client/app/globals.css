@@ -23,6 +23,11 @@ body{
   min-height: 100%;
   margin: 0;
   overflow-x: clip;
+  overscroll-behavior: none;
+}
+
+html{
+  background: #050607;
 }
 
 body{

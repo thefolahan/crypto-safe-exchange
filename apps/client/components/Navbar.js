@@ -65,10 +65,10 @@ export default function Navbar() {
                 <div className="hidden items-center gap-2 md:flex">
                     {token ? (
                         <>
-                            <a href="/dashboard" className="btn-dark text-sm">
+                            <a href="/dashboard" className="btn-dark h-10 w-[118px] px-0 text-sm">
                                 Dashboard
                             </a>
-                            <button type="button" onClick={onLogout} className="btn-gold text-sm">
+                            <button type="button" onClick={onLogout} className="btn-gold h-10 w-[118px] px-0 text-sm">
                                 Logout
                             </button>
                         </>
@@ -113,10 +113,10 @@ export default function Navbar() {
                         <div className="mt-3 grid gap-2">
                             {token ? (
                                 <>
-                                    <a href="/dashboard" className="btn-dark text-sm" onClick={() => setOpen(false)}>
+                                    <a href="/dashboard" className="btn-dark h-10 w-[118px] px-0 text-sm" onClick={() => setOpen(false)}>
                                         Dashboard
                                     </a>
-                                    <button type="button" onClick={onLogout} className="btn-gold text-sm">
+                                    <button type="button" onClick={onLogout} className="btn-gold h-10 w-[118px] px-0 text-sm">
                                         Logout
                                     </button>
                                 </>

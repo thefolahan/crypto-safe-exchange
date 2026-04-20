@@ -336,7 +336,7 @@ export default function DashboardPage() {
                 <div className="relative overflow-hidden rounded-3xl border border-[#303a4b] bg-[#0f141d] p-5 shadow-[0_20px_56px_rgba(0,0,0,.5)]">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
-                            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-[#3a465a] bg-gradient-to-br from-[rgba(221,192,138,.92)] to-[rgba(164,134,84,.78)] shadow-[0_16px_40px_rgba(0,0,0,.35)] sm:h-[64px] sm:w-[64px]">
+                            <div className="relative h-[110px] w-[110px] shrink-0 overflow-hidden rounded-2xl border border-[#3a465a] bg-gradient-to-br from-[rgba(221,192,138,.92)] to-[rgba(164,134,84,.78)] shadow-[0_16px_40px_rgba(0,0,0,.35)] sm:h-[118px] sm:w-[118px]">
                                 {profileUrl ? (
                                     <img src={profileUrl} alt="Profile" className="h-full w-full object-cover object-top" />
                                 ) : (
