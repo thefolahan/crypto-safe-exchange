@@ -10,7 +10,7 @@
     "build:client": "npm run build --workspace=cryptoearnings",
     "start:client": "npm run start --workspace=cryptoearnings",
     "start:server": "npm run start --workspace=cryptoearnings-server",
-    "vercel-build": "npm run build --workspace=cryptoearnings && rm -rf .next && cp -R apps/client/.next .next"
+    "vercel-build": "npm run build --workspace=cryptoearnings && rm -rf .next && cp -R apps/client/.next .next && node scripts/fix-root-next-nft-paths.mjs"
   },
   "private": true,
   "workspaces": [
