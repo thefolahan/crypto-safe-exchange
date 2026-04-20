@@ -38,7 +38,7 @@ export default function ProtectedRoute({ children }) {
     if (!ok) {
         return (
             <main className="grid min-h-screen place-items-center bg-[#050607] px-4">
-                <div className="site-card w-full max-w-md p-5 text-center sm:p-6">
+                <div className="w-full max-w-md text-center">
                     <p className="text-xs uppercase tracking-[0.12em] text-[var(--gold)]">Protected</p>
                     <p className="mt-2 text-lg font-semibold text-[#f2f4f7]">Checking session…</p>
                     <p className="mt-2 text-sm text-[var(--muted)]">Please wait.</p>
