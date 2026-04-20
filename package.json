@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Monorepo for crypto earnings client and server",
   "scripts": {
+    "dev": "concurrently -n client,server -c cyan,magenta \"npm:dev:client\" \"npm:dev:server\"",
     "dev:client": "npm run dev --workspace=cryptoearnings",
     "dev:server": "npm run dev --workspace=cryptoearnings-server",
     "build:client": "npm run build --workspace=cryptoearnings",
@@ -13,5 +14,8 @@
   "workspaces": [
     "apps/client",
     "apps/server"
-  ]
+  ],
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }
