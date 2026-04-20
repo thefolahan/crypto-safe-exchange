@@ -10,3 +10,4 @@ apps/*/coverage/
 
 apps/*/.env
 apps/*/.env.*
+.vercel
