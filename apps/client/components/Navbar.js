@@ -18,11 +18,13 @@ function scrollTo(id) {
 export default function Navbar() {
     const router = useRouter();
     const [open, setOpen] = useState(false);
-    const [token, setToken] = useState("");
+    const [token, setToken] = useState(() => {
+        if (typeof window === "undefined") return "";
+        return localStorage.getItem("token") || "";
+    });
 
     useEffect(() => {
         const read = () => setToken(localStorage.getItem("token") || "");
-        read();
         window.addEventListener("storage", read);
         return () => window.removeEventListener("storage", read);
     }, []);
@@ -65,10 +67,10 @@ export default function Navbar() {
                 <div className="hidden items-center gap-2 md:flex">
                     {token ? (
                         <>
-                            <a href="/dashboard" className="btn-dark h-10 w-[118px] px-0 text-sm">
+                            <a href="/dashboard" className="btn-dark h-10 w-[118px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm">
                                 Dashboard
                             </a>
-                            <button type="button" onClick={onLogout} className="btn-gold h-10 w-[118px] px-0 text-sm">
+                            <button type="button" onClick={onLogout} className="btn-gold h-10 w-[118px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm">
                                 Logout
                             </button>
                         </>
@@ -113,10 +115,10 @@ export default function Navbar() {
                         <div className="mt-3 grid gap-2">
                             {token ? (
                                 <>
-                                    <a href="/dashboard" className="btn-dark h-10 w-[118px] px-0 text-sm" onClick={() => setOpen(false)}>
+                                    <a href="/dashboard" className="btn-dark h-10 w-[118px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm" onClick={() => setOpen(false)}>
                                         Dashboard
                                     </a>
-                                    <button type="button" onClick={onLogout} className="btn-gold h-10 w-[118px] px-0 text-sm">
+                                    <button type="button" onClick={onLogout} className="btn-gold h-10 w-[118px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm">
                                         Logout
                                     </button>
                                 </>

@@ -1,31 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
+
+function readSessionValidity() {
+    if (typeof window === "undefined") return null;
+
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+    if (!token || !user) return false;
+
+    try {
+        JSON.parse(user);
+        return true;
+    } catch {
+        return false;
+    }
+}
 
 export default function ProtectedRoute({ children }) {
     const router = useRouter();
     const pathname = usePathname();
-    const [ok, setOk] = useState(false);
+    const ok = useMemo(() => readSessionValidity(), []);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const user = localStorage.getItem("user");
-
-        if (!token || !user) {
-            router.replace(`/login?next=${encodeURIComponent(pathname || "/dashboard")}`);
-            return;
-        }
-
-        try {
-            JSON.parse(user);
-            setOk(true);
-        } catch {
+        if (ok === false) {
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             router.replace(`/login?next=${encodeURIComponent(pathname || "/dashboard")}`);
         }
-    }, [router, pathname]);
+    }, [ok, router, pathname]);
+
+    if (ok === null) {
+        return null;
+    }
 
     if (!ok) {
         return (

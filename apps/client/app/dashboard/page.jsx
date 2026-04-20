@@ -101,6 +101,30 @@ function softMaskEmail(email) {
     return `${head}***${tail}@${b}`;
 }
 
+function readStoredUser() {
+    if (typeof window === "undefined") return null;
+    try {
+        const raw = localStorage.getItem("user");
+        const token = localStorage.getItem("token");
+        if (!raw || !token) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : null;
+    } catch {
+        return null;
+    }
+}
+
+function readStoredPriceSnapshot() {
+    if (typeof window === "undefined") return { points: [], price: null, ts: null };
+    const saved = safeReadPoints();
+    const last = saved[saved.length - 1];
+    return {
+        points: saved,
+        price: last?.price ?? null,
+        ts: last?.ts ?? null,
+    };
+}
+
 function IconBtn({ children, onClick, title }) {
     return (
         <button
@@ -154,38 +178,23 @@ function Modal({ open, title, subtitle, onClose, children }) {
 
 export default function DashboardPage() {
     const router = useRouter();
+    const [initialSnapshot] = useState(() => readStoredPriceSnapshot());
 
-    const [user, setUser] = useState(null);
-    const [btcPrice, setBtcPrice] = useState(null);
-    const [btcTs, setBtcTs] = useState(null);
+    const [user] = useState(() => readStoredUser());
+    const [btcPrice, setBtcPrice] = useState(initialSnapshot.price);
+    const [btcTs, setBtcTs] = useState(initialSnapshot.ts);
     const [priceError, setPriceError] = useState("");
     const [activeModal, setActiveModal] = useState(null);
-    const [points, setPoints] = useState([]);
+    const [points, setPoints] = useState(initialSnapshot.points);
     const animRef = useRef({ raf: null, from: 0, to: 0, start: 0, dur: 700 });
 
     useEffect(() => {
-        try {
-            const raw = localStorage.getItem("user");
-            const token = localStorage.getItem("token");
-
-            if (!raw || !token) {
-                router.replace("/login");
-                return;
-            }
-
-            const parsed = JSON.parse(raw);
-            setUser(parsed);
-        } catch {
+        if (!user) {
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             router.replace("/login");
         }
-    }, [router]);
-
-    useEffect(() => {
-        const saved = typeof window !== "undefined" ? safeReadPoints() : [];
-        if (saved.length) setPoints(saved);
-    }, []);
+    }, [router, user]);
 
     useEffect(() => {
         let cancelled = false;
