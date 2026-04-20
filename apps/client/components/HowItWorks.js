@@ -16,6 +16,11 @@ const steps = [
         title: "Trade & Monitor",
         text: "Execute and track performance through your dashboard.",
     },
+    {
+        step: "04",
+        title: "Withdraw Profits",
+        text: "Request profit withdrawal directly from your dashboard when eligible.",
+    },
 ];
 
 export default function HowItWorks() {
@@ -23,10 +28,10 @@ export default function HowItWorks() {
         <Section
             id="about"
             label="How It Works"
-            title="Get started in three straightforward steps."
+            title="Get started in four straightforward steps."
             centered
         >
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {steps.map((item) => (
                     <article key={item.step} className="site-card p-5 sm:p-6">
                         <div className="text-sm font-semibold tracking-[0.1em] text-[var(--gold)]">{item.step}</div>
