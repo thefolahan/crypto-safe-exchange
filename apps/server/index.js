@@ -172,11 +172,13 @@ app.get("/", (req, res) => {
       background: radial-gradient(72% 52% at 50% -10%, rgba(109,121,161,0.16), transparent 68%), var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 28px 16px;
+      padding: 24px 16px;
+      display: grid;
+      place-items: center;
     }
     .wrap {
+      width: min(980px, 100%);
       max-width: 980px;
-      margin: 0 auto;
       border: 1px solid var(--border);
       border-radius: 20px;
       background: var(--surface);
@@ -188,14 +190,26 @@ app.get("/", (req, res) => {
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 16px;
-      padding: 20px 20px 14px;
+      gap: 12px;
+      padding: 20px;
       border-bottom: 1px solid var(--border);
       text-align: center;
     }
     .logo { width: 54px; height: 54px; }
-    h1 { margin: 0; font-size: 1.4rem; line-height: 1.2; }
-    .sub { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
+    .apiTag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(221,192,138,.42);
+      background: rgba(221,192,138,.1);
+      color: var(--gold);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: .9rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
     .meta {
       display: flex;
       flex-wrap: wrap;
@@ -225,6 +239,13 @@ app.get("/", (req, res) => {
     }
     .ok { color: var(--ok); border-color: rgba(123,231,192,.35); background: rgba(123,231,192,.1); }
     .warn { color: var(--warn); border-color: rgba(255,191,112,.35); background: rgba(255,191,112,.1); }
+    .neutral {
+      color: #dce5f3;
+      border-color: #40506b;
+      background: rgba(162, 184, 222, .1);
+      text-transform: none;
+      letter-spacing: 0;
+    }
     .tableWrap { overflow-x: auto; }
     table {
       width: 100%;
@@ -232,7 +253,7 @@ app.get("/", (req, res) => {
       min-width: 760px;
     }
     th, td {
-      text-align: left;
+      text-align: center;
       padding: 12px 14px;
       border-top: 1px solid var(--border);
       font-size: .9rem;
@@ -269,15 +290,12 @@ app.get("/", (req, res) => {
         <circle cx="64" cy="63" r="19" fill="#10151E" stroke="#1F2734" stroke-width="2" />
         <text x="64" y="63" fill="#DDC08A" font-size="13" font-family="Arial, Helvetica, sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" letter-spacing="0.8">BTC</text>
       </svg>
-      <div>
-        <h1>Crypto Safe Exchange API</h1>
-        <p class="sub">Endpoint status dashboard</p>
-      </div>
+      <span class="apiTag">API</span>
     </div>
     <div class="meta">
-      <span class="pill">Service: <strong>online</strong></span>
+      <span class="pill">Service: <span class="badge ok">online</span></span>
       <span class="pill">Database: <span class="badge ${dbClass}">${db.label}</span></span>
-      <span class="pill">Timestamp: <strong>${now}</strong></span>
+      <span class="pill">Timestamp: <span class="badge neutral">${now}</span></span>
     </div>
     <div class="tableWrap">
       <table>
