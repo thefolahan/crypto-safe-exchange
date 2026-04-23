@@ -4,6 +4,7 @@ import HowItWorks from "../components/HowItWorks";
 import Services from "../components/Services";
 import BitcoinPrice from "../components/BitcoinPrice";
 import Plans from "../components/Plans";
+import NotableUsers from "../components/NotableUsers";
 import Faq from "../components/Faq";
 import News from "../components/News";
 import Footer from "../components/Footer";
@@ -24,6 +25,7 @@ export default function HomePage() {
                 </section>
 
                 <Plans />
+                <NotableUsers />
                 <Faq />
                 <News />
             </main>
