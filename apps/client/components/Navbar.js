@@ -80,12 +80,20 @@ export default function Navbar() {
             setAuthUser(nextUser);
         };
 
+        const onVisibilityChange = () => {
+            if (document.visibilityState === "visible") read();
+        };
+
         read();
         window.addEventListener("storage", read);
         window.addEventListener("focus", read);
+        window.addEventListener("pageshow", read);
+        document.addEventListener("visibilitychange", onVisibilityChange);
         return () => {
             window.removeEventListener("storage", read);
             window.removeEventListener("focus", read);
+            window.removeEventListener("pageshow", read);
+            document.removeEventListener("visibilitychange", onVisibilityChange);
         };
     }, []);
 
