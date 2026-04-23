@@ -19,13 +19,6 @@ function maskEmail(email) {
     return `${name.slice(0, 3)}***@${domain}`;
 }
 
-function resolveUserImage(profilePictureUrl) {
-    const value = String(profilePictureUrl || "").trim();
-    if (!value) return "";
-    if (/^https?:\/\//i.test(value)) return value;
-    return buildApiUrl(value);
-}
-
 export default function AdminPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
@@ -163,9 +156,6 @@ export default function AdminPage() {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
-                            <a href="/dashboard" className="btn-dark h-10 whitespace-nowrap px-4 text-sm">
-                                Back to Dashboard
-                            </a>
                             <button
                                 type="button"
                                 className="btn-gold h-10 whitespace-nowrap px-4 text-sm"
@@ -298,13 +288,9 @@ export default function AdminPage() {
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
                                                     <div className="h-9 w-9 overflow-hidden rounded-full border border-[#2f3b4f] bg-[#0c1119]">
-                                                        {user.profilePictureUrl ? (
-                                                            <img
-                                                                src={resolveUserImage(user.profilePictureUrl)}
-                                                                alt={user.fullName}
-                                                                className="h-full w-full object-cover"
-                                                            />
-                                                        ) : null}
+                                                        <div className="grid h-full w-full place-items-center text-xs font-black text-[#c6d1e6]">
+                                                            {String(user.username || "U").slice(0, 1).toUpperCase()}
+                                                        </div>
                                                     </div>
                                                     <div className="min-w-0">
                                                         <p className="truncate font-bold text-[var(--text)]">{user.fullName}</p>

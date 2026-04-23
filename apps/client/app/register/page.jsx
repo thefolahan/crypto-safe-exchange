@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaCheck, FaCopy, FaEye, FaEyeSlash } from "react-icons/fa";
@@ -8,7 +8,6 @@ import { buildApiUrl } from "../lib/apiUrl";
 
 export default function RegisterPage() {
     const router = useRouter();
-    const fileRef = useRef(null);
 
     const [countries, setCountries] = useState([]);
     const [countriesLoading, setCountriesLoading] = useState(true);
@@ -24,7 +23,6 @@ export default function RegisterPage() {
         confirmPassword: "",
     });
 
-    const [profilePicture, setProfilePicture] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [secretPhrase, setSecretPhrase] = useState("");
@@ -61,16 +59,6 @@ export default function RegisterPage() {
 
     const canSubmit = useMemo(() => Object.values(form).every(Boolean), [form]);
     const secretWords = useMemo(() => secretPhrase.split(" ").filter(Boolean), [secretPhrase]);
-    const profilePreview = useMemo(() => {
-        if (!profilePicture) return "";
-        return URL.createObjectURL(profilePicture);
-    }, [profilePicture]);
-
-    useEffect(() => {
-        return () => {
-            if (profilePreview) URL.revokeObjectURL(profilePreview);
-        };
-    }, [profilePreview]);
 
     function onChange(event) {
         const { name, value } = event.target;
@@ -87,20 +75,10 @@ export default function RegisterPage() {
         try {
             setLoading(true);
 
-            const data = new FormData();
-            data.append("fullName", form.fullName);
-            data.append("username", form.username);
-            data.append("email", form.email);
-            data.append("gender", form.gender);
-            data.append("phoneNumber", form.phoneNumber);
-            data.append("country", form.country);
-            data.append("password", form.password);
-            data.append("confirmPassword", form.confirmPassword);
-            if (profilePicture) data.append("profilePicture", profilePicture);
-
             const response = await fetch(buildApiUrl("/api/auth/register"), {
                 method: "POST",
-                body: data,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
             });
 
             const payload = await response.json().catch(() => ({}));
@@ -265,36 +243,6 @@ export default function RegisterPage() {
                                     <span className="mb-1.5 block text-xs text-[var(--muted)]">Phone number</span>
                                     <input name="phoneNumber" value={form.phoneNumber} onChange={onChange} className={fieldClass} />
                                 </label>
-
-                                <div className="site-card rounded-xl bg-[#12161d] p-2.5">
-                                    <div className="flex flex-wrap items-center justify-between gap-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 overflow-hidden rounded-lg border border-[#2a303a] bg-[#0f1218]">
-                                                {profilePreview ? (
-                                                    <img src={profilePreview} alt="Preview" className="h-full w-full object-cover" />
-                                                ) : (
-                                                    <div className="grid h-full w-full place-items-center text-xs text-[var(--muted)]">
-                                                        IMG
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="text-xs text-[var(--muted)]">
-                                                {profilePicture ? profilePicture.name : "Optional profile picture"}
-                                            </div>
-                                        </div>
-
-                                        <button type="button" onClick={() => fileRef.current?.click()} className="btn-dark text-xs">
-                                            Upload
-                                        </button>
-                                    </div>
-                                    <input
-                                        ref={fileRef}
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => setProfilePicture(e.target.files?.[0] || null)}
-                                    />
-                                </div>
 
                                 <label className="block">
                                     <span className="mb-1.5 block text-xs text-[var(--muted)]">Password</span>

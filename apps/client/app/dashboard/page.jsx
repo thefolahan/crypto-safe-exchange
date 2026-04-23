@@ -2,16 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { buildApiUrl } from "../lib/apiUrl";
 
 const SPECIAL_ACCOUNTS = {
     "donaldflynn144@gmail.com": {
         baseBtc: 221.84995699,
-        profilePictureUrl: "/assets/images/Flynn-Donald.JPG",
     },
     "waszczukfamily@gmail.com": {
         baseBtc: 89.7552,
-        profilePictureUrl: "/assets/images/Martyna-Waszczuk.jpg",
     },
 };
 
@@ -68,12 +65,6 @@ function formatBTC(n) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 8,
     });
-}
-
-function resolveProfileUrl(profilePictureUrl) {
-    if (!profilePictureUrl) return "";
-    if (/^https?:\/\//i.test(profilePictureUrl)) return profilePictureUrl;
-    return buildApiUrl(profilePictureUrl);
 }
 
 function formatCompactUSD(n) {
@@ -299,11 +290,6 @@ export default function DashboardPage() {
         return () => clearInterval(id);
     }, [isSpecial, btcHoldings]);
 
-    const profileUrl = useMemo(() => {
-        if (specialAccount?.profilePictureUrl) return specialAccount.profilePictureUrl;
-        return resolveProfileUrl(user?.profilePictureUrl);
-    }, [specialAccount, user?.profilePictureUrl]);
-
     const sessionChange = useMemo(() => {
         if (!isSpecial) return null;
 
@@ -346,13 +332,9 @@ export default function DashboardPage() {
                     <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
                             <div className="relative h-[110px] w-[110px] shrink-0 overflow-hidden rounded-2xl border border-[#3a465a] bg-gradient-to-br from-[rgba(221,192,138,.92)] to-[rgba(164,134,84,.78)] shadow-[0_16px_40px_rgba(0,0,0,.35)] sm:h-[118px] sm:w-[118px]">
-                                {profileUrl ? (
-                                    <img src={profileUrl} alt="Profile" className="h-full w-full object-cover object-top" />
-                                ) : (
-                                    <div className="grid h-full w-full place-items-center text-lg font-black text-[#061023]">
-                                        {String(user.username || "U").slice(0, 1).toUpperCase()}
-                                    </div>
-                                )}
+                                <div className="grid h-full w-full place-items-center text-lg font-black text-[#061023]">
+                                    {String(user.username || "U").slice(0, 1).toUpperCase()}
+                                </div>
                             </div>
 
                             <div className="min-w-0">

@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema(
         phoneNumber: { type: String, required: true, trim: true },
         country: { type: String, required: true, trim: true },
         role: { type: String, enum: ["user", "admin"], default: "user" },
-        profilePictureUrl: { type: String, default: "" },
         passwordHash: { type: String, required: true },
         secretPhraseDigest: { type: String, required: true, unique: true, sparse: true },
     },

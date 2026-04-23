@@ -1,8 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
-const fs = require("fs");
 const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 
@@ -12,11 +10,6 @@ const newsletterRoutes = require("./routes/newsletterRoutes");
 const app = express();
 
 connectDB();
-
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-}
 
 const staticAllowedOrigins = [
     "http://localhost:3000",
@@ -73,8 +66,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/uploads", express.static(uploadsDir));
-
 const endpointCatalog = [
     { method: "GET", path: "/", description: "API status dashboard" },
     { method: "GET", path: "/status", description: "Machine-readable health/status" },
@@ -84,7 +75,6 @@ const endpointCatalog = [
     { method: "GET", path: "/api/auth/admin/users", description: "Admin: list users and details" },
     { method: "POST", path: "/api/newsletter/subscribe", description: "Subscribe to newsletter" },
     { method: "POST", path: "/api/newsletter/unsubscribe", description: "Unsubscribe from newsletter" },
-    { method: "GET", path: "/uploads/:file", description: "Serve uploaded profile pictures" },
 ];
 
 function getDatabaseStatus() {
@@ -106,9 +96,7 @@ function getDatabaseStatus() {
 }
 
 function getEndpointStatus(endpoint) {
-    if (endpoint.path.startsWith("/uploads")) {
-        return fs.existsSync(uploadsDir);
-    }
+    void endpoint;
     return true;
 }
 

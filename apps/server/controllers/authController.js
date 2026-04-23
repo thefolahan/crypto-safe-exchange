@@ -21,7 +21,6 @@ function toPublicUser(user) {
         phoneNumber: user.phoneNumber,
         country: user.country,
         role: String(user.role || "user"),
-        profilePictureUrl: user.profilePictureUrl,
     };
 }
 
@@ -35,7 +34,6 @@ function toAdminUser(user) {
         phoneNumber: user.phoneNumber,
         country: user.country,
         role: String(user.role || "user"),
-        profilePictureUrl: user.profilePictureUrl,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
     };
@@ -130,8 +128,6 @@ exports.register = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, 12);
         const { phrase: secretPhrase, digest: secretPhraseDigest } = await generateUniqueSecretPhrase();
 
-        const profilePictureUrl = req.file ? `/uploads/${req.file.filename}` : "";
-
         const user = await User.create({
             fullName: String(fullName).trim(),
             username: cleanUsername,
@@ -139,7 +135,6 @@ exports.register = async (req, res) => {
             gender: String(gender).trim().toLowerCase(),
             phoneNumber: String(phoneNumber).trim(),
             country: String(country).trim(),
-            profilePictureUrl,
             passwordHash,
             secretPhraseDigest,
         });

@@ -10,7 +10,6 @@ const DEMO_USER = {
     phoneNumber: "+10000000000",
     country: "United States",
     role: "admin",
-    profilePictureUrl: "",
 };
 
 const DEMO_PASSWORD = "fakeuser123";

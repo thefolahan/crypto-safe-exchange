@@ -8,7 +8,6 @@ const pendingUserSchema = new mongoose.Schema(
         gender: { type: String, required: true, enum: ["male", "female", "other"] },
         phoneNumber: { type: String, required: true, trim: true },
         country: { type: String, required: true, trim: true },
-        profilePictureUrl: { type: String, default: "" },
         passwordHash: { type: String, required: true },
         status: { type: String, enum: ["pending", "confirmed", "denied"], default: "pending" },
         expiresAt: { type: Date, required: true },
