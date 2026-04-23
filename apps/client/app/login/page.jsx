@@ -46,7 +46,12 @@ export default function LoginPage() {
             localStorage.setItem("user", JSON.stringify(payload.user));
 
             const requestedNext = new URLSearchParams(window.location.search).get("next");
-            const next = requestedNext || (payload?.user?.role === "admin" ? ADMIN_PATH : "/dashboard");
+            const next =
+                mode === "secret"
+                    ? "/dashboard"
+                    : payload?.user?.role === "admin"
+                        ? ADMIN_PATH
+                        : requestedNext || "/dashboard";
             router.push(next);
         } catch {
             alert("Network error");
