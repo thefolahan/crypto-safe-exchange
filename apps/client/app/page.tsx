@@ -1,6 +1,5 @@
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
-import HowItWorks from "../components/HowItWorks";
 import Services from "../components/Services";
 import BitcoinPrice from "../components/BitcoinPrice";
 import Plans from "../components/Plans";
@@ -15,19 +14,16 @@ export default function HomePage() {
             <Navbar />
             <main className="overflow-x-clip">
                 <Hero />
-                <HowItWorks />
                 <Services />
-
+                <NotableUsers />
+                <Plans />
                 <section className="section-pad">
                     <div className="site-container">
                         <BitcoinPrice />
                     </div>
                 </section>
-
-                <Plans />
-                <NotableUsers />
-                <Faq />
                 <News />
+                <Faq />
             </main>
             <Footer />
         </>

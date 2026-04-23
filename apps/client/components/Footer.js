@@ -4,8 +4,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { buildApiUrl } from "../app/lib/apiUrl";
 
-const buyLinks = ["Blockchain", "Bitcoin.com", "Crypto.com", "Coinbase", "Cash App"];
-
 export default function Footer() {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
@@ -44,26 +42,15 @@ export default function Footer() {
     return (
         <footer id="contact" className="border-t border-[var(--border)] bg-[#06070a]">
             <div className="site-container py-10">
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+                <div className="grid gap-8 md:grid-cols-2 lg:gap-10">
                     <div>
-                        <img src="/assets/svgs/logo.svg?v=btc-shield-1" alt="Crypto Safe Exchange" className="h-24 w-24 sm:h-28 sm:w-28" />
-                        <div className="mt-3 text-2xl font-semibold text-[#eef1f6]">Crypto Safe Exchange</div>
+                        <img src="/assets/svgs/logo.svg?v=btc-shield-1" alt="Crypto Safe" className="h-24 w-24 sm:h-28 sm:w-28" />
+                        <div className="mt-3 text-2xl font-semibold text-[#eef1f6]">Crypto Safe</div>
                         <p className="mt-4 break-words text-sm leading-relaxed text-[var(--muted)]">
                             15 Kay Ave Mc Kenzie, Tennessee (TN), 38201
                             <br />
-                            support@cryptosafeexchange.com
+                            support@cryptosafevault.com
                         </p>
-                    </div>
-
-                    <div>
-                        <div className="text-lg font-semibold text-[#eef1f6]">Where to buy Bitcoin</div>
-                        <div className="mt-4 grid gap-2">
-                            {buyLinks.map((item) => (
-                                <a key={item} href="#" className="text-sm text-[var(--muted)] hover:text-[#edf2fb]">
-                                    {item}
-                                </a>
-                            ))}
-                        </div>
                     </div>
 
                     <div>
@@ -93,7 +80,7 @@ export default function Footer() {
             </div>
 
             <div className="border-t border-[var(--border)] py-5 text-center text-sm text-[var(--muted)]">
-                © {new Date().getFullYear()} Crypto Safe Exchange. All rights reserved.
+                © {new Date().getFullYear()} Crypto Safe. All rights reserved.
             </div>
         </footer>
     );

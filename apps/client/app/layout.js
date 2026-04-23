@@ -15,8 +15,8 @@ const bodyFont = DM_Sans({
 });
 
 export const metadata = {
-    title: "Crypto Safe Exchange | Quant Trading Platform",
-    description: "A modern multi-asset trading interface for crypto, forex, and commodities.",
+    title: "Crypto Safe | Secure Crypto Vault",
+    description: "A secure crypto-safe platform to store, protect, and monitor digital assets.",
 };
 
 export default function RootLayout({ children }) {

@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { buildApiUrl } from "../lib/apiUrl";
 import { ADMIN_PATH } from "../lib/adminPath";
 
 export default function LoginPage() {
     const router = useRouter();
-    const [mode, setMode] = useState("password");
+    const [mode, setMode] = useState("secret");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [secretPhrase, setSecretPhrase] = useState("");
@@ -66,16 +67,27 @@ export default function LoginPage() {
 
             <div className="relative z-10 grid min-h-[calc(100vh-4rem)] place-items-center sm:min-h-[calc(100vh-5rem)]">
                 <div className="mx-auto w-full max-w-md">
-                    <a href="/" className="mx-auto mb-6 flex w-fit items-center text-sm text-[var(--gold)]">
+                    <Link href="/" className="mx-auto mb-6 flex w-fit items-center text-sm text-[var(--gold)]">
                         <img src="/assets/svgs/logo.svg?v=btc-shield-1" alt="Logo" className="h-12 w-12" />
-                    </a>
+                    </Link>
 
                     <div className="site-card bg-[#0f1218] p-5 sm:p-6">
                         <h1 className="text-3xl font-semibold text-[#f3f4f6]">Sign in</h1>
-                        <p className="mt-2 text-sm text-[var(--muted)]">Access your account dashboard.</p>
+                        <p className="mt-2 text-sm text-[var(--muted)]">Access your crypto safe.</p>
 
                         <form onSubmit={onSubmit} className="mt-5 grid gap-3">
                             <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-[#2e3645] bg-[#0b0f16] p-1 text-xs font-semibold">
+                                <button
+                                    type="button"
+                                    onClick={() => setMode("secret")}
+                                    className={`rounded-md px-3 py-2 transition ${
+                                        mode === "secret"
+                                            ? "bg-[var(--gold)] text-[#16120a]"
+                                            : "text-[#c7d0de] hover:bg-white/[0.05]"
+                                    }`}
+                                >
+                                    12-Word Phrase
+                                </button>
                                 <button
                                     type="button"
                                     onClick={() => setMode("password")}
@@ -86,17 +98,6 @@ export default function LoginPage() {
                                     }`}
                                 >
                                     Username
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setMode("secret")}
-                                    className={`rounded-md px-3 py-2 transition ${
-                                        mode === "secret"
-                                            ? "bg-[var(--gold)] text-[#16120a]"
-                                            : "text-[#c7d0de] hover:bg-white/[0.05]"
-                                    }`}
-                                >
-                                    Secret Phrase
                                 </button>
                             </div>
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { FaCheck, FaCopy, FaEye, FaEyeSlash } from "react-icons/fa";
 import { buildApiUrl } from "../lib/apiUrl";
 
@@ -24,7 +25,6 @@ export default function RegisterPage() {
     });
 
     const [profilePicture, setProfilePicture] = useState(null);
-    const [profilePreview, setProfilePreview] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [secretPhrase, setSecretPhrase] = useState("");
@@ -59,20 +59,18 @@ export default function RegisterPage() {
         };
     }, []);
 
-    useEffect(() => {
-        if (!profilePicture) {
-            setProfilePreview("");
-            return;
-        }
-
-        const url = URL.createObjectURL(profilePicture);
-        setProfilePreview(url);
-
-        return () => URL.revokeObjectURL(url);
-    }, [profilePicture]);
-
     const canSubmit = useMemo(() => Object.values(form).every(Boolean), [form]);
     const secretWords = useMemo(() => secretPhrase.split(" ").filter(Boolean), [secretPhrase]);
+    const profilePreview = useMemo(() => {
+        if (!profilePicture) return "";
+        return URL.createObjectURL(profilePicture);
+    }, [profilePicture]);
+
+    useEffect(() => {
+        return () => {
+            if (profilePreview) URL.revokeObjectURL(profilePreview);
+        };
+    }, [profilePreview]);
 
     function onChange(event) {
         const { name, value } = event.target;
@@ -135,35 +133,36 @@ export default function RegisterPage() {
         }
     }
 
-    const fieldClass = "input border-[#303745] bg-[#0c1016]";
+    const fieldClass = "input h-10 border-[#303745] bg-[#0c1016] px-3 py-2 text-sm text-[#e8ecf2]";
+    const selectClass = "input h-12 border-[#303745] bg-[#0c1016] px-3 pr-9 py-0 text-base text-[#e8ecf2] appearance-none";
 
     return (
-        <main className="relative min-h-screen overflow-y-auto px-4 py-8 sm:py-10">
+        <main className="relative h-screen overflow-hidden px-3 py-3 sm:px-4 sm:py-4">
             <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: "url('/assets/images/register-background.webp')" }}
             />
             <div className="absolute inset-0 bg-[rgba(4,6,10,.74)]" />
 
-            <div className="relative z-10 grid min-h-[calc(100vh-4rem)] place-items-center sm:min-h-[calc(100vh-5rem)]">
+            <div className="relative z-10 grid h-full place-items-center">
                 <div className="mx-auto w-full max-w-xl">
-                    <a href="/" className="mx-auto mb-6 flex w-fit items-center text-sm text-[var(--gold)]">
+                    <Link href="/" className="mx-auto mb-3 flex w-fit items-center text-sm text-[var(--gold)]">
                         <img src="/assets/svgs/logo.svg?v=btc-shield-1" alt="Logo" className="h-12 w-12" />
-                    </a>
+                    </Link>
 
-                    <div className="site-card bg-[#0f1218] p-5 sm:p-6">
-                        <h1 className="text-3xl font-semibold text-[#f3f4f6]">Create account</h1>
-                        <p className="mt-2 text-sm text-[var(--muted)]">
+                    <div className="site-card bg-[#0f1218] p-4 sm:p-5">
+                        <h1 className="text-2xl font-semibold text-[#f3f4f6]">Create account</h1>
+                        <p className="mt-1 text-sm text-[var(--muted)]">
                             {secretPhrase
                                 ? "Save this phrase now. You can use it to sign in."
-                                : "Set up your profile and start trading."}
+                                : "Set up your profile and create your crypto safe."}
                         </p>
 
                         {secretPhrase ? (
-                            <section className="mt-5 rounded-xl border border-[#2d3442] bg-[#121722] p-4 sm:p-5">
+                            <section className="mt-3 rounded-xl border border-[#2d3442] bg-[#121722] p-3 sm:p-4">
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <h2 className="text-lg font-semibold text-[#f3f4f6]">Your Secret Phrase</h2>
+                                        <h2 className="text-base font-semibold text-[#f3f4f6]">Your Secret Phrase</h2>
                                         <p className="mt-1 text-xs text-[var(--muted)]">
                                             Keep it private. This phrase can sign in to your account.
                                         </p>
@@ -180,16 +179,16 @@ export default function RegisterPage() {
                                     </button>
                                 </div>
 
-                                <ol className="mt-4 grid gap-2 rounded-xl border border-[#2c3240] bg-[#0f131d] p-3 text-sm text-[#e8ecf2] sm:grid-cols-2">
+                                <ol className="mt-3 grid gap-1.5 rounded-xl border border-[#2c3240] bg-[#0f131d] p-2.5 text-xs text-[#e8ecf2] sm:grid-cols-3">
                                     {secretWords.map((word, index) => (
-                                        <li key={`${word}-${index}`} className="rounded-md bg-white/[0.03] px-3 py-2">
+                                        <li key={`${word}-${index}`} className="rounded-md bg-white/[0.03] px-2.5 py-1.5">
                                             <span className="mr-2 text-[var(--gold)]">{index + 1}.</span>
                                             {word}
                                         </li>
                                     ))}
                                 </ol>
 
-                                <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                                <div className="mt-3 grid gap-2 sm:grid-cols-2">
                                     <button type="button" onClick={onCopySecretPhrase} className="btn-dark justify-center">
                                         {copied ? "Copied" : "Copy phrase"}
                                     </button>
@@ -203,18 +202,18 @@ export default function RegisterPage() {
                                 </div>
                             </section>
                         ) : (
-                            <form onSubmit={onSubmit} className="mt-5 grid gap-3">
-                                <label>
+                            <form onSubmit={onSubmit} className="mt-3 grid gap-2">
+                                <label className="block">
                                     <span className="mb-1.5 block text-xs text-[var(--muted)]">Full name</span>
                                     <input name="fullName" value={form.fullName} onChange={onChange} className={fieldClass} />
                                 </label>
 
-                                <label>
+                                <label className="block">
                                     <span className="mb-1.5 block text-xs text-[var(--muted)]">Username</span>
                                     <input name="username" value={form.username} onChange={onChange} className={fieldClass} />
                                 </label>
 
-                                <label>
+                                <label className="block">
                                     <span className="mb-1.5 block text-xs text-[var(--muted)]">Email</span>
                                     <input
                                         name="email"
@@ -224,47 +223,53 @@ export default function RegisterPage() {
                                     />
                                 </label>
 
-                                <div className="grid gap-3 sm:grid-cols-2">
-                                    <label>
-                                        <span className="mb-1.5 block text-xs text-[var(--muted)]">Gender</span>
-                                        <select name="gender" value={form.gender} onChange={onChange} className={fieldClass}>
-                                            <option value="">Select</option>
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                            <option value="other">Other</option>
-                                        </select>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <label className="block">
+                                        <span className="mb-1.5 block text-xs text-[var(--muted)]">Country</span>
+                                        <span className="relative block">
+                                            <select
+                                                name="country"
+                                                value={form.country}
+                                                onChange={onChange}
+                                                className={selectClass}
+                                                disabled={countriesLoading}
+                                            >
+                                                <option value="">
+                                                    {countriesLoading ? "Loading countries..." : "Select country"}
+                                                </option>
+                                                {countries.map((country) => (
+                                                    <option key={country} value={country}>
+                                                        {country}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--muted)]">⌄</span>
+                                        </span>
                                     </label>
 
-                                    <label>
-                                        <span className="mb-1.5 block text-xs text-[var(--muted)]">Phone number</span>
-                                        <input name="phoneNumber" value={form.phoneNumber} onChange={onChange} className={fieldClass} />
+                                    <label className="block">
+                                        <span className="mb-1.5 block text-xs text-[var(--muted)]">Gender</span>
+                                        <span className="relative block">
+                                            <select name="gender" value={form.gender} onChange={onChange} className={selectClass}>
+                                                <option value="">Select</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--muted)]">⌄</span>
+                                        </span>
                                     </label>
                                 </div>
 
-                                <label>
-                                    <span className="mb-1.5 block text-xs text-[var(--muted)]">Country</span>
-                                    <select
-                                        name="country"
-                                        value={form.country}
-                                        onChange={onChange}
-                                        className={fieldClass}
-                                        disabled={countriesLoading}
-                                    >
-                                        <option value="">
-                                            {countriesLoading ? "Loading countries..." : "Select country"}
-                                        </option>
-                                        {countries.map((country) => (
-                                            <option key={country} value={country}>
-                                                {country}
-                                            </option>
-                                        ))}
-                                    </select>
+                                <label className="block">
+                                    <span className="mb-1.5 block text-xs text-[var(--muted)]">Phone number</span>
+                                    <input name="phoneNumber" value={form.phoneNumber} onChange={onChange} className={fieldClass} />
                                 </label>
 
-                                <div className="site-card rounded-xl bg-[#12161d] p-3">
+                                <div className="site-card rounded-xl bg-[#12161d] p-2.5">
                                     <div className="flex flex-wrap items-center justify-between gap-3">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-[#2a303a] bg-[#0f1218]">
+                                            <div className="h-10 w-10 overflow-hidden rounded-lg border border-[#2a303a] bg-[#0f1218]">
                                                 {profilePreview ? (
                                                     <img src={profilePreview} alt="Preview" className="h-full w-full object-cover" />
                                                 ) : (
@@ -291,7 +296,7 @@ export default function RegisterPage() {
                                     />
                                 </div>
 
-                                <label>
+                                <label className="block">
                                     <span className="mb-1.5 block text-xs text-[var(--muted)]">Password</span>
                                     <span className="relative block">
                                         <input
@@ -312,7 +317,7 @@ export default function RegisterPage() {
                                     </span>
                                 </label>
 
-                                <label>
+                                <label className="block">
                                     <span className="mb-1.5 block text-xs text-[var(--muted)]">Confirm password</span>
                                     <span className="relative block">
                                         <input
@@ -337,9 +342,9 @@ export default function RegisterPage() {
                                     {loading ? "Creating account..." : "Create account"}
                                 </button>
 
-                                <a href="/login" className="text-center text-sm text-[var(--muted)] hover:text-[#eef1f6]">
+                                <Link href="/login" className="text-center text-sm text-[var(--muted)] hover:text-[#eef1f6]">
                                     Already registered? <span className="text-[var(--gold)]">Sign in</span>
-                                </a>
+                                </Link>
                             </form>
                         )}
                     </div>

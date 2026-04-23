@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { ADMIN_PATH } from "../app/lib/adminPath";
 
 const navItems = [
-    { id: "about", label: "About" },
+    { id: "features", label: "Safe" },
     { id: "pricing", label: "Pricing" },
     { id: "contact", label: "Contact" },
 ];
@@ -72,9 +73,9 @@ export default function Navbar() {
     return (
         <header className="sticky top-0 z-50 border-b border-[#1e232d] bg-[rgba(8,9,12,.88)] backdrop-blur-xl">
             <div className="site-container flex h-16 items-center justify-between gap-4 sm:h-[4.5rem]">
-                <a href="/" className="flex items-center gap-2.5" aria-label="Crypto Safe Exchange Home">
+                <Link href="/" className="flex items-center gap-2.5" aria-label="Crypto Safe Home">
                     <img src="/assets/svgs/logo.svg?v=btc-shield-1" alt="Logo" className="h-10 w-10 sm:h-11 sm:w-11" />
-                </a>
+                </Link>
 
                 <nav className="hidden items-center gap-1 md:flex">
                     {navItems.map((item) => (
@@ -107,7 +108,7 @@ export default function Navbar() {
                     ) : (
                         <>
                             <a href="/register" className="btn-gold text-sm">
-                                Get Started
+                                Create Safe
                             </a>
                         </>
                     )}
@@ -160,7 +161,7 @@ export default function Navbar() {
                             ) : (
                                 <>
                                     <a href="/register" className="btn-gold text-sm" onClick={() => setOpen(false)}>
-                                        Get Started
+                                        Create Safe
                                     </a>
                                 </>
                             )}

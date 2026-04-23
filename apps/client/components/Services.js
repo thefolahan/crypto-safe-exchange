@@ -2,20 +2,20 @@ import Section from "./Section";
 
 const features = [
     {
-        title: "Innovative Data Visualization",
-        text: "Track price movement and account activity through clean charts and responsive market cards.",
+        title: "Vault-First Protection",
+        text: "Your account is designed around secure asset storage with hardened access and session safeguards.",
     },
     {
-        title: "User-Friendly Interface",
-        text: "Every action is streamlined so traders can move from analysis to execution without friction.",
+        title: "12-Word Recovery Access",
+        text: "Recover account access with your 12-word phrase and keep ownership control in your hands.",
     },
     {
-        title: "Customized Display",
-        text: "Prioritize the instruments and metrics that matter to your strategy with flexible modules.",
+        title: "Protected Activity Timeline",
+        text: "Track deposits, transfers, and withdrawals in a clear history built for accountability.",
     },
     {
-        title: "Multi-Market Support",
-        text: "Manage crypto, forex, and commodities from one environment with consistent workflows.",
+        title: "Withdrawal Safety Controls",
+        text: "Manage outflows through structured checks that reduce mistakes and unauthorized movement.",
     },
 ];
 
@@ -24,7 +24,7 @@ export default function Services() {
         <Section
             id="features"
             label="Features"
-            title="Our Unique Features"
+            title="Security Features for Your Crypto Safe"
             centered
         >
             <div className="grid gap-4 md:grid-cols-2 md:gap-5">
@@ -32,8 +32,8 @@ export default function Services() {
                     <article key={feature.title} className="site-card p-5 sm:p-6">
                         <h3 className="text-xl font-semibold leading-tight text-[#f5f6f8]">{feature.title}</h3>
                         <p className="mt-3 text-sm leading-relaxed text-[var(--muted)] sm:text-base">{feature.text}</p>
-                        <a href="/register" className="mt-4 inline-flex text-sm font-semibold text-[var(--gold)]">
-                            Learn More →
+                        <a href="/login" className="mt-4 inline-flex text-sm font-semibold text-[var(--gold)]">
+                            Open Safe →
                         </a>
                     </article>
                 ))}

@@ -17,6 +17,18 @@ const faqItems = [
         q: "Is my data private?",
         a: "Yes. Account data is protected with authenticated access and secure transmission. Only authorized sessions can access your private dashboard.",
     },
+    {
+        q: "What if I lose my password?",
+        a: "You can still access your account with your 12-word secret phrase. Keep that phrase secure and offline.",
+    },
+    {
+        q: "Do I need to complete identity checks?",
+        a: "Depending on your usage level, additional verification steps may be required to protect account integrity and withdrawals.",
+    },
+    {
+        q: "Can I use the same account on multiple devices?",
+        a: "Yes. You can access your account across devices, but only authenticated sessions are allowed and monitored.",
+    },
 ];
 
 export default function Faq() {

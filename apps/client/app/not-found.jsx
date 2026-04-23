@@ -12,7 +12,7 @@ export default function NotFoundPage() {
             <section className="relative z-10 w-full max-w-xl p-7 text-center sm:p-9">
                 <img
                     src="/assets/svgs/logo.svg?v=btc-shield-1"
-                    alt="Crypto Safe Exchange logo"
+                    alt="Crypto Safe logo"
                     className="mx-auto h-16 w-16"
                 />
                 <p className="mt-5 text-xs font-extrabold uppercase tracking-[.14em] text-[var(--gold)]">404</p>
