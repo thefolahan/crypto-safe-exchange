@@ -30,20 +30,54 @@ function readStoredUser() {
     }
 }
 
+function isAdminOnMainPage(nextToken, nextUser) {
+    if (typeof window === "undefined") return false;
+    return Boolean(nextToken) && nextUser?.role === "admin" && window.location.pathname === "/";
+}
+
 export default function Navbar() {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [token, setToken] = useState(() => {
         if (typeof window === "undefined") return "";
-        return localStorage.getItem("token") || "";
+        const nextToken = localStorage.getItem("token") || "";
+        const nextUser = readStoredUser();
+        if (isAdminOnMainPage(nextToken, nextUser)) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            return "";
+        }
+        return nextToken;
     });
-    const [authUser, setAuthUser] = useState(() => readStoredUser());
+    const [authUser, setAuthUser] = useState(() => {
+        const nextUser = readStoredUser();
+        const nextToken = typeof window === "undefined" ? "" : localStorage.getItem("token") || "";
+        return isAdminOnMainPage(nextToken, nextUser) ? null : nextUser;
+    });
     const isAdmin = authUser?.role === "admin";
+
+    function clearSessionState() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setToken("");
+        setAuthUser(null);
+    }
 
     useEffect(() => {
         const read = () => {
-            setToken(localStorage.getItem("token") || "");
-            setAuthUser(readStoredUser());
+            const nextToken = localStorage.getItem("token") || "";
+            const nextUser = readStoredUser();
+
+            if (isAdminOnMainPage(nextToken, nextUser)) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                setToken("");
+                setAuthUser(null);
+                return;
+            }
+
+            setToken(nextToken);
+            setAuthUser(nextUser);
         };
 
         read();
@@ -63,10 +97,7 @@ export default function Navbar() {
     }, [open]);
 
     function onLogout() {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        setToken("");
-        setAuthUser(null);
+        clearSessionState();
         setOpen(false);
         router.push("/");
     }
