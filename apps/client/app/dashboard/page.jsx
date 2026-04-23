@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FaUserCircle } from "react-icons/fa";
 
 const SPECIAL_ACCOUNTS = {
     "donaldflynn144@gmail.com": {
@@ -332,8 +333,8 @@ export default function DashboardPage() {
                     <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
                             <div className="relative h-[110px] w-[110px] shrink-0 overflow-hidden rounded-2xl border border-[#3a465a] bg-gradient-to-br from-[rgba(221,192,138,.92)] to-[rgba(164,134,84,.78)] shadow-[0_16px_40px_rgba(0,0,0,.35)] sm:h-[118px] sm:w-[118px]">
-                                <div className="grid h-full w-full place-items-center text-lg font-black text-[#061023]">
-                                    {String(user.username || "U").slice(0, 1).toUpperCase()}
+                                <div className="grid h-full w-full place-items-center text-[#061023]">
+                                    <FaUserCircle className="h-14 w-14 sm:h-16 sm:w-16" aria-hidden="true" />
                                 </div>
                             </div>
 

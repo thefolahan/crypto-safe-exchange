@@ -38,6 +38,7 @@ export default function Navbar() {
         return localStorage.getItem("token") || "";
     });
     const [authUser, setAuthUser] = useState(() => readStoredUser());
+    const isAdmin = authUser?.role === "admin";
 
     useEffect(() => {
         const read = () => {
@@ -93,14 +94,12 @@ export default function Navbar() {
                 <div className="hidden items-center gap-2 md:flex">
                     {token ? (
                         <>
-                            <a href="/dashboard" className="btn-dark h-10 w-[116px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm">
-                                Dashboard
+                            <a
+                                href={isAdmin ? ADMIN_PATH : "/dashboard"}
+                                className="btn-dark h-10 w-[116px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm"
+                            >
+                                {isAdmin ? "Admin" : "Dashboard"}
                             </a>
-                            {authUser?.role === "admin" ? (
-                                <a href={ADMIN_PATH} className="btn-dark h-10 w-[116px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm">
-                                    Admin
-                                </a>
-                            ) : null}
                             <button type="button" onClick={onLogout} className="btn-gold h-10 w-[116px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm">
                                 Logout
                             </button>
@@ -146,14 +145,13 @@ export default function Navbar() {
                         <div className="mt-3 grid gap-2">
                             {token ? (
                                 <>
-                                    <a href="/dashboard" className="btn-dark h-10 w-[116px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm" onClick={() => setOpen(false)}>
-                                        Dashboard
+                                    <a
+                                        href={isAdmin ? ADMIN_PATH : "/dashboard"}
+                                        className="btn-dark h-10 w-[116px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        {isAdmin ? "Admin" : "Dashboard"}
                                     </a>
-                                    {authUser?.role === "admin" ? (
-                                        <a href={ADMIN_PATH} className="btn-dark h-10 w-[116px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm" onClick={() => setOpen(false)}>
-                                            Admin
-                                        </a>
-                                    ) : null}
                                     <button type="button" onClick={onLogout} className="btn-gold h-10 w-[116px] break-normal whitespace-nowrap px-0 text-xs leading-none sm:text-sm">
                                         Logout
                                     </button>
