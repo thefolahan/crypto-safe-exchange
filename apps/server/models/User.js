@@ -1,5 +1,21 @@
 const mongoose = require("mongoose");
 
+const selectedPlanSchema = new mongoose.Schema(
+    {
+        code: { type: String, trim: true, lowercase: true, default: "" },
+        name: { type: String, trim: true, default: "" },
+        feeUsd: { type: Number, min: 0, default: 0 },
+        status: {
+            type: String,
+            enum: ["none", "awaiting_payment", "awaiting_verification", "active"],
+            default: "none",
+        },
+        selectedAt: { type: Date, default: null },
+        activatedAt: { type: Date, default: null },
+    },
+    { _id: false }
+);
+
 const userSchema = new mongoose.Schema(
     {
         fullName: { type: String, required: true, trim: true },
@@ -11,6 +27,8 @@ const userSchema = new mongoose.Schema(
         role: { type: String, enum: ["user", "admin"], default: "user" },
         passwordHash: { type: String, required: true },
         secretPhraseDigest: { type: String, required: true, unique: true, sparse: true },
+        portfolioUsd: { type: Number, min: 0, default: 0 },
+        selectedPlan: { type: selectedPlanSchema, default: () => ({ status: "none", feeUsd: 0 }) },
     },
     { timestamps: true }
 );

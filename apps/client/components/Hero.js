@@ -8,15 +8,21 @@ export default function Hero() {
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,6,10,.78)_0%,rgba(4,6,10,.72)_45%,rgba(4,6,10,.58)_100%)]" />
 
             <div className="site-container relative z-10 flex min-h-[78vh] items-center sm:min-h-[86vh]">
-                <div className="max-w-3xl text-center sm:text-left">
+                <div className="mx-auto max-w-3xl text-center">
                     <h1 className="title whitespace-pre-line text-balance text-[#f7f8fa]">
-                        {"Your Crypto Safe\nStarts Here"}
+                        <span className="block whitespace-nowrap">Your Crypto Safe</span>
+                        <span className="block">Starts Here</span>
                     </h1>
-                    <p className="sub mt-6 max-w-2xl whitespace-pre-line text-base text-[#d6dae1] sm:text-lg">
-                        {"Store and protect your crypto assets in one secure vault.\nUse your recovery phrase to access funds anytime."}
+                    <p className="sub mt-6 max-w-2xl text-[#d6dae1]">
+                        <span className="block whitespace-nowrap text-[0.75rem] sm:text-lg sm:whitespace-normal">
+                            Store and protect your crypto assets in one secure vault.
+                        </span>
+                        <span className="mt-1 block text-[0.75rem] sm:mt-0 sm:text-lg">
+                            Use your recovery phrase to access funds anytime.
+                        </span>
                     </p>
 
-                    <div className="mt-8 flex justify-center sm:justify-start">
+                    <div className="mt-8 flex justify-center">
                         <a href="/login" className="btn-gold">
                             Go to Safe
                         </a>

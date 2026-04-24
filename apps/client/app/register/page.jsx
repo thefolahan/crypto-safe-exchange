@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FaCheck, FaCopy, FaEye, FaEyeSlash } from "react-icons/fa";
 import { buildApiUrl } from "../lib/apiUrl";
 
 export default function RegisterPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const selectedPlanCode = String(searchParams.get("plan") || "").trim().toLowerCase();
+    const planQuery = selectedPlanCode ? `?plan=${encodeURIComponent(selectedPlanCode)}` : "";
 
     const [countries, setCountries] = useState([]);
     const [countriesLoading, setCountriesLoading] = useState(true);
@@ -135,6 +138,11 @@ export default function RegisterPage() {
                                 ? "Save this phrase now. You can use it to sign in."
                                 : "Set up your profile and create your crypto safe."}
                         </p>
+                        {selectedPlanCode ? (
+                            <p className="mt-1 text-xs font-semibold text-[var(--gold)]">
+                                Selected plan: {selectedPlanCode}
+                            </p>
+                        ) : null}
 
                         {secretPhrase ? (
                             <section className="mt-3 rounded-xl border border-[#2d3442] bg-[#121722] p-3 sm:p-4">
@@ -172,7 +180,7 @@ export default function RegisterPage() {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => router.push("/login")}
+                                        onClick={() => router.push(`/login${planQuery}`)}
                                         className="btn-gold justify-center"
                                     >
                                         Continue to Sign in
@@ -290,7 +298,7 @@ export default function RegisterPage() {
                                     {loading ? "Creating account..." : "Create account"}
                                 </button>
 
-                                <Link href="/login" className="text-center text-sm text-[var(--muted)] hover:text-[#eef1f6]">
+                                <Link href={`/login${planQuery}`} className="text-center text-sm text-[var(--muted)] hover:text-[#eef1f6]">
                                     Already registered? <span className="text-[var(--gold)]">Sign in</span>
                                 </Link>
                             </form>

@@ -6,6 +6,8 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
+const settingsRoutes = require("./routes/settingsRoutes");
+const depositRoutes = require("./routes/depositRoutes");
 
 const app = express();
 
@@ -72,7 +74,16 @@ const endpointCatalog = [
     { method: "POST", path: "/api/auth/register", description: "Register user and secret phrase" },
     { method: "POST", path: "/api/auth/login", description: "Login via password or secret phrase" },
     { method: "GET", path: "/api/auth/me", description: "Get current authenticated user" },
+    { method: "PATCH", path: "/api/auth/plan", description: "User: select safe plan" },
     { method: "GET", path: "/api/auth/admin/users", description: "Admin: list users and details" },
+    { method: "PATCH", path: "/api/auth/admin/users/:userId/portfolio", description: "Admin: update user portfolio" },
+    { method: "GET", path: "/api/settings/public", description: "Public wallet and pricing settings" },
+    { method: "GET", path: "/api/settings/admin", description: "Admin: view wallet and pricing settings" },
+    { method: "PATCH", path: "/api/settings/admin", description: "Admin: update wallet and pricing settings" },
+    { method: "GET", path: "/api/deposits/me", description: "User: list own deposits" },
+    { method: "POST", path: "/api/deposits", description: "User: submit deposit for verification" },
+    { method: "GET", path: "/api/deposits/admin", description: "Admin: list deposits" },
+    { method: "PATCH", path: "/api/deposits/admin/:depositId", description: "Admin: approve/reject deposit" },
     { method: "POST", path: "/api/newsletter/subscribe", description: "Subscribe to newsletter" },
     { method: "POST", path: "/api/newsletter/unsubscribe", description: "Unsubscribe from newsletter" },
 ];
@@ -307,6 +318,8 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/newsletter", newsletterRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/deposits", depositRoutes);
 
 app.use((err, req, res, next) => {
     console.error("GLOBAL ERROR:", err);

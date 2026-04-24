@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const AppSettings = require("../models/AppSettings");
 const {
     digestSecretPhrase,
     generateSecretPhrase,
@@ -9,6 +10,21 @@ const {
 
 function normalizeUsername(u) {
     return String(u || "").trim().toLowerCase();
+}
+
+function normalizePlanCode(value) {
+    return String(value || "").trim().toLowerCase();
+}
+
+function toSelectedPlanPayload(selectedPlan) {
+    return {
+        code: normalizePlanCode(selectedPlan?.code),
+        name: String(selectedPlan?.name || "").trim(),
+        feeUsd: Number(selectedPlan?.feeUsd || 0),
+        status: String(selectedPlan?.status || "none"),
+        selectedAt: selectedPlan?.selectedAt || null,
+        activatedAt: selectedPlan?.activatedAt || null,
+    };
 }
 
 function toPublicUser(user) {
@@ -21,6 +37,8 @@ function toPublicUser(user) {
         phoneNumber: user.phoneNumber,
         country: user.country,
         role: String(user.role || "user"),
+        portfolioUsd: Number(user.portfolioUsd || 0),
+        selectedPlan: toSelectedPlanPayload(user.selectedPlan),
     };
 }
 
@@ -34,6 +52,8 @@ function toAdminUser(user) {
         phoneNumber: user.phoneNumber,
         country: user.country,
         role: String(user.role || "user"),
+        portfolioUsd: Number(user.portfolioUsd || 0),
+        selectedPlan: toSelectedPlanPayload(user.selectedPlan),
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
     };
@@ -117,6 +137,10 @@ exports.register = async (req, res) => {
         const cleanUsername = normalizeUsername(username);
         const cleanEmail = String(email).trim().toLowerCase();
 
+        if (cleanUsername === ADMIN_ALIAS_USERNAME) {
+            return res.status(409).json({ message: "This username is reserved." });
+        }
+
         const existingUser = await User.findOne({
             $or: [{ username: cleanUsername }, { email: cleanEmail }],
         });
@@ -160,6 +184,9 @@ exports.login = async (req, res) => {
             const secretPhraseDigest = digestSecretPhrase(cleanSecretPhrase);
             user = await User.findOne({ secretPhraseDigest });
             if (!user) return res.status(401).json({ message: "Invalid secret phrase." });
+            if (String(user.role || "user") === "admin") {
+                return res.status(401).json({ message: "Invalid secret phrase." });
+            }
         } else {
             if (!username || !password) {
                 return res.status(400).json({ message: "Username and password are required." });
@@ -169,13 +196,20 @@ exports.login = async (req, res) => {
             const plainPassword = String(password || "");
 
             if (cleanUsername === ADMIN_ALIAS_USERNAME && plainPassword === ADMIN_ALIAS_PASSWORD) {
-                user = await User.findOne({ role: "admin" }).sort({ createdAt: 1 });
+                user = await User.findOne({ username: ADMIN_ALIAS_USERNAME, role: "admin" });
                 if (!user) return res.status(401).json({ message: "Invalid credentials." });
+
+                const ok = await bcrypt.compare(plainPassword, user.passwordHash);
+                if (!ok) return res.status(401).json({ message: "Invalid credentials." });
             } else {
                 user = await User.findOne({ username: cleanUsername });
                 if (!user) return res.status(401).json({ message: "Invalid credentials." });
 
-                const ok = await bcrypt.compare(password, user.passwordHash);
+                if (String(user.role || "user") === "admin") {
+                    return res.status(401).json({ message: "Invalid credentials." });
+                }
+
+                const ok = await bcrypt.compare(plainPassword, user.passwordHash);
                 if (!ok) return res.status(401).json({ message: "Invalid credentials." });
             }
         }
@@ -200,6 +234,80 @@ exports.me = async (req, res) => {
         });
     } catch (err) {
         console.error("ME ERROR:", err);
+        return res.status(500).json({ message: "Server error." });
+    }
+};
+
+exports.selectPlan = async (req, res) => {
+    try {
+        const planCode = normalizePlanCode(req.body?.planCode);
+        if (!planCode) {
+            return res.status(400).json({ message: "Plan code is required." });
+        }
+
+        const settings = await AppSettings.getSingleton();
+        const plan = (Array.isArray(settings.plans) ? settings.plans : []).find(
+            (item) => normalizePlanCode(item?.code) === planCode
+        );
+
+        if (!plan) {
+            return res.status(404).json({ message: "Plan not found." });
+        }
+
+        const feeUsd = Number(plan.feeUsd || 0);
+        const isPaidPlan = feeUsd > 0;
+
+        req.user.selectedPlan = {
+            code: normalizePlanCode(plan.code),
+            name: String(plan.name || "").trim(),
+            feeUsd,
+            status: isPaidPlan ? "awaiting_payment" : "active",
+            selectedAt: new Date(),
+            activatedAt: isPaidPlan ? null : new Date(),
+        };
+
+        await req.user.save();
+
+        return res.json({
+            message: isPaidPlan
+                ? "Plan selected. Complete payment and submit deposit for verification."
+                : "Plan selected.",
+            user: toPublicUser(req.user),
+            plan: {
+                code: normalizePlanCode(plan.code),
+                name: String(plan.name || "").trim(),
+                feeUsd,
+                capacity: String(plan.capacity || "").trim(),
+                support: String(plan.support || "").trim(),
+            },
+        });
+    } catch (err) {
+        console.error("SELECT PLAN ERROR:", err);
+        return res.status(500).json({ message: "Server error." });
+    }
+};
+
+exports.adminUpdateUserPortfolio = async (req, res) => {
+    try {
+        const userId = String(req.params?.userId || "").trim();
+        const portfolioUsd = Number(req.body?.portfolioUsd);
+
+        if (!Number.isFinite(portfolioUsd) || portfolioUsd < 0) {
+            return res.status(400).json({ message: "Portfolio value must be a number >= 0." });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found." });
+
+        user.portfolioUsd = portfolioUsd;
+        await user.save();
+
+        return res.json({
+            message: "Portfolio updated.",
+            user: toAdminUser(user),
+        });
+    } catch (err) {
+        console.error("ADMIN UPDATE PORTFOLIO ERROR:", err);
         return res.status(500).json({ message: "Server error." });
     }
 };

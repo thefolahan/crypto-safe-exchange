@@ -155,10 +155,25 @@ export default function Navbar() {
                 <button
                     type="button"
                     onClick={() => setOpen((v) => !v)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#262c37] text-[#e6e9ee] md:hidden"
-                    aria-label="Open menu"
+                    className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#262c37] text-[#e6e9ee] transition-colors duration-200 hover:bg-white/[0.03] md:hidden"
+                    aria-label={open ? "Close menu" : "Open menu"}
                 >
-                    {open ? "✕" : "☰"}
+                    <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+                    <span
+                        className={`absolute h-[1.5px] w-5 rounded-full bg-current transition-all duration-200 ease-out ${
+                            open ? "translate-y-0 rotate-[18deg]" : "-translate-y-[5px] rotate-0"
+                        }`}
+                    />
+                    <span
+                        className={`absolute h-[1.5px] w-5 rounded-full bg-current transition-all duration-200 ease-out ${
+                            open ? "scale-x-80 opacity-0" : "scale-x-100 opacity-100"
+                        }`}
+                    />
+                    <span
+                        className={`absolute h-[1.5px] w-5 rounded-full bg-current transition-all duration-200 ease-out ${
+                            open ? "translate-y-0 -rotate-[18deg]" : "translate-y-[5px] rotate-0"
+                        }`}
+                    />
                 </button>
             </div>
 

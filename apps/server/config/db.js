@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
 const { ensureDemoUser } = require("../services/seedDemoUser");
 const { removeProfilePictureField } = require("../services/removeProfilePictureField");
+const { ensureAppSettings } = require("../services/seedAppSettings");
 
 async function connectDB() {
     try {
         await mongoose.connect(process.env.MONGO_URI);
         console.log("✅ MongoDB connected");
         await ensureDemoUser();
+        await ensureAppSettings();
         const removed = await removeProfilePictureField();
         if (removed.usersModified || removed.pendingUsersModified) {
             console.log(

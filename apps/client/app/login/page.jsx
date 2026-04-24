@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { buildApiUrl } from "../lib/apiUrl";
@@ -9,12 +9,15 @@ import { ADMIN_PATH } from "../lib/adminPath";
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [mode, setMode] = useState("secret");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [secretPhrase, setSecretPhrase] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const selectedPlanCode = String(searchParams.get("plan") || "").trim().toLowerCase();
+    const planQuery = selectedPlanCode ? `?plan=${encodeURIComponent(selectedPlanCode)}` : "";
 
     async function onSubmit(event) {
         event.preventDefault();
@@ -45,12 +48,15 @@ export default function LoginPage() {
             localStorage.setItem("token", payload.token);
             localStorage.setItem("user", JSON.stringify(payload.user));
 
-            const requestedNext = new URLSearchParams(window.location.search).get("next");
+            const currentParams = new URLSearchParams(window.location.search);
+            const requestedNext = currentParams.get("next");
+            const selectedPlan = String(currentParams.get("plan") || "").trim().toLowerCase();
+
             const next =
-                mode === "secret"
-                    ? "/dashboard"
-                    : payload?.user?.role === "admin"
-                        ? ADMIN_PATH
+                payload?.user?.role === "admin"
+                    ? ADMIN_PATH
+                    : selectedPlan
+                        ? `/dashboard?plan=${encodeURIComponent(selectedPlan)}`
                         : requestedNext || "/dashboard";
             router.push(next);
         } catch {
@@ -79,6 +85,11 @@ export default function LoginPage() {
                     <div className="site-card bg-[#0f1218] p-5 sm:p-6">
                         <h1 className="text-3xl font-semibold text-[#f3f4f6]">Sign in</h1>
                         <p className="mt-2 text-sm text-[var(--muted)]">Access your crypto safe.</p>
+                        {selectedPlanCode ? (
+                            <p className="mt-1 text-xs font-semibold text-[var(--gold)]">
+                                Selected plan: {selectedPlanCode}
+                            </p>
+                        ) : null}
 
                         <form onSubmit={onSubmit} className="mt-5 grid gap-3">
                             <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-[#2e3645] bg-[#0b0f16] p-1 text-xs font-semibold">
@@ -155,7 +166,7 @@ export default function LoginPage() {
                                 {loading ? "Signing in..." : "Sign in"}
                             </button>
 
-                            <a href="/register" className="text-center text-sm text-[var(--muted)] hover:text-[#eef1f6]">
+                            <a href={`/register${planQuery}`} className="text-center text-sm text-[var(--muted)] hover:text-[#eef1f6]">
                                 No account yet? <span className="text-[var(--gold)]">Create one</span>
                             </a>
                         </form>
